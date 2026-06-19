@@ -1,29 +1,32 @@
 import { Platform } from 'react-native';
 
-// FamilyFlow — "Vogue Family" editorial palette: ivory paper, charcoal ink,
-// hairline rules, a single restrained metallic gold accent.
+// FamilyFlow — "Editorial Family" palette. Keeps the magazine bones (warm
+// paper canvas, near-black ink, hairline rules, a metallic gold accent) so the
+// app still stands out and feels aspirational — but the accents are now joyful
+// jewel tones (terracotta, teal, marigold, berry, grape) to bring the fun,
+// warm, family energy the brief asks for. `muted` is darkened to pass contrast.
 export const colors = {
   // editorial core
-  ivory: '#F4F1EA',
-  paper: '#FBFAF6',
-  ink: '#161412',
-  charcoal: '#3A352F',
-  gold: '#9C7A3C', // muted metallic accent
-  line: '#E0D9CC', // hairline
-  muted: '#9C9488',
+  ivory: '#F7F2E9', // warm paper, a touch fresher than before
+  paper: '#FFFDF7', // near-white card
+  ink: '#1B1714', // warm near-black
+  charcoal: '#43392F', // warm body text
+  gold: '#C28A33', // richer, more luminous metallic accent
+  line: '#E7DDCC', // hairline
+  muted: '#8A7E6F', // darkened for legibility on ivory
 
   // aliases used across the app (so the look propagates):
-  bg: '#F4F1EA',
-  card: '#FBFAF6',
-  border: '#E0D9CC',
-  dark: '#161412',
+  bg: '#F7F2E9',
+  card: '#FFFDF7',
+  border: '#E7DDCC',
+  dark: '#1B1714',
   white: '#FFFFFF',
 
-  // original brand hues, kept as restrained accents (domains/members)
-  purple: '#6E668F',
-  sage: '#84AB7F',
-  sand: '#C9A24B',
-  plum: '#3F403A',
+  // joyful jewel accents (domains / members) — vibrant but still tasteful
+  purple: '#7A5EA8', // grape
+  sage: '#4FA58C', // fresh teal-green
+  sand: '#D99A3C', // marigold / honey
+  plum: '#A85674', // berry
 };
 
 // Typography. Didot is the quintessential fashion-magazine serif on iOS.
@@ -32,12 +35,12 @@ export const fonts = {
   serifBold: Platform.select({ ios: 'Didot-Bold', android: 'serif', default: 'serif' }),
 };
 
-// Domain -> colour (refined, lower-chroma accents)
+// Domain -> colour (joyful jewel accents)
 export const domainColors = {
-  household: colors.purple,
-  baby: colors.sage,
-  admin: colors.gold,
-  social: colors.sand,
+  household: '#C56A4A', // terracotta
+  baby: colors.sage, // teal
+  admin: colors.gold, // marigold gold
+  social: colors.plum, // berry
 };
 
 export const domainLabels = {
@@ -56,16 +59,17 @@ export const frequencyLabels = {
   yearly: 'Plans',
 };
 
-// Palette options offered when creating/editing a family member.
+// Palette options offered when creating/editing a family member — a vibrant,
+// harmonious spread so every household has a joyful, distinct cast.
 export const MEMBER_COLORS = [
-  colors.purple,
-  colors.gold,
-  colors.sage,
-  colors.sand,
-  '#9E5B6B', // rose
-  '#5B7A94', // slate blue
-  '#7A5A3C', // tobacco
-  colors.ink,
+  '#C56A4A', // terracotta
+  colors.sage, // teal
+  colors.gold, // marigold
+  colors.plum, // berry
+  colors.purple, // grape
+  '#5E7E9C', // slate blue
+  '#E0875F', // coral
+  colors.ink, // ink
 ];
 
 export const MEMBER_EMOJIS = [
