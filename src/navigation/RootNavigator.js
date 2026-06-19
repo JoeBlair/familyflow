@@ -1,0 +1,100 @@
+import React from 'react';
+import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import { useApp } from '../context/AppContext';
+import AuthScreen from '../screens/AuthScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
+import ChoresScreen from '../screens/ChoresScreen';
+import CalendarScreen from '../screens/CalendarScreen';
+import ChartsScreen from '../screens/ChartsScreen';
+import CheckinScreen from '../screens/CheckinScreen';
+import BattleScreen from '../screens/BattleScreen';
+import MembersScreen from '../screens/MembersScreen';
+import HeaderUser from '../components/HeaderUser';
+import { colors, fonts } from '../theme/colors';
+
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+function Splash() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>
+      <ActivityIndicator color={colors.gold} size="large" />
+    </View>
+  );
+}
+
+function FamilyButton() {
+  const navigation = useNavigation();
+  return (
+    <Pressable onPress={() => navigation.navigate('Family')} hitSlop={10} style={{ marginLeft: 16 }}>
+      <Text style={{ fontSize: 11, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase', color: colors.ink }}>
+        Family
+      </Text>
+    </Pressable>
+  );
+}
+
+function Tabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.bg },
+        headerTitleStyle: { fontFamily: fonts.serif, color: colors.ink, fontSize: 24, letterSpacing: 0.5 },
+        headerTitleAlign: 'center',
+        headerShadowVisible: false,
+        headerLeft: () => <FamilyButton />,
+        headerRight: () => <HeaderUser />,
+        tabBarActiveTintColor: colors.ink,
+        tabBarInactiveTintColor: colors.muted,
+        tabBarStyle: { backgroundColor: colors.bg, borderTopWidth: 0, height: 84, paddingTop: 14 },
+        tabBarLabelStyle: { fontSize: 9, fontWeight: '700', letterSpacing: 1.4, textTransform: 'uppercase' },
+        tabBarIcon: ({ focused }) => (
+          <View style={{ width: 5, height: 5, borderRadius: 3, marginBottom: 3, backgroundColor: focused ? colors.gold : 'transparent' }} />
+        ),
+      }}
+    >
+      <Tab.Screen name="Weekly" component={ChoresScreen} />
+      <Tab.Screen name="Calendar" component={CalendarScreen} />
+      <Tab.Screen name="Charts" component={ChartsScreen} />
+      <Tab.Screen name="Check-in" component={CheckinScreen} />
+      <Tab.Screen name="Forfeit" component={BattleScreen} />
+    </Tab.Navigator>
+  );
+}
+
+export default function RootNavigator() {
+  const { booting, session, profileLoaded, hasFamily } = useApp();
+
+  if (booting) return <Splash />;
+
+  return (
+    <NavigationContainer>
+      {!session ? (
+        <AuthScreen />
+      ) : !profileLoaded ? (
+        <Splash />
+      ) : !hasFamily ? (
+        <OnboardingScreen />
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="Family"
+            component={MembersScreen}
+            options={{
+              presentation: 'modal',
+              headerStyle: { backgroundColor: colors.bg },
+              headerTitleStyle: { fontFamily: fonts.serif, color: colors.ink, fontSize: 22 },
+              headerShadowVisible: false,
+              title: 'Family',
+            }}
+          />
+        </Stack.Navigator>
+      )}
+    </NavigationContainer>
+  );
+}
