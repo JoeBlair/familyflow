@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView, Modal, Alert, Share } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, Modal, Alert, Share, Linking } from 'react-native';
 import MemberEditor from '../components/MemberEditor';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
 import { useApp } from '../context/AppContext';
@@ -129,6 +129,13 @@ export default function MembersScreen() {
         <Text style={styles.deleteAccountText}>Delete account</Text>
       </Pressable>
 
+      <Pressable
+        onPress={() => Linking.openURL('https://joeblair.github.io/familyflow/privacy.html')}
+        style={styles.privacy}
+      >
+        <Text style={styles.privacyText}>Privacy policy</Text>
+      </Pressable>
+
       {/* Editor */}
       <Modal visible={!!editing} transparent animationType="slide" onRequestClose={() => setEditing(null)}>
         <View style={styles.backdrop}>
@@ -171,6 +178,8 @@ const styles = StyleSheet.create({
   signoutText: { color: colors.muted, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', fontWeight: '600' },
   deleteAccount: { alignItems: 'center', marginTop: 18 },
   deleteAccountText: { color: '#9E5B6B', fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', fontWeight: '600' },
+  privacy: { alignItems: 'center', marginTop: 16 },
+  privacyText: { color: colors.muted, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', fontWeight: '600' },
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: '#0008' },
   sheet: { backgroundColor: colors.bg, padding: 22, paddingBottom: 40 },
   sheetBtns: { flexDirection: 'row', gap: 12, marginTop: 26 },
