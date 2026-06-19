@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView, Modal, Alert, Share, Linking } from 'react-native';
 import MemberEditor from '../components/MemberEditor';
+import IntroScreen from './IntroScreen';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
 import { useApp } from '../context/AppContext';
 import { MEMBER_COLORS, colors, fonts } from '../theme/colors';
@@ -9,6 +10,7 @@ export default function MembersScreen() {
   const { family, members, activeMember, addMember, updateMember, deleteMember, signOut, deleteAccount } = useApp();
 
   const [editing, setEditing] = useState(null);
+  const [howto, setHowto] = useState(false);
   const [name, setName] = useState('');
   const [color, setColor] = useState(MEMBER_COLORS[0]);
   const [emoji, setEmoji] = useState('🙂');
@@ -129,12 +131,20 @@ export default function MembersScreen() {
         <Text style={styles.deleteAccountText}>Delete account</Text>
       </Pressable>
 
+      <Pressable onPress={() => setHowto(true)} style={styles.privacy}>
+        <Text style={styles.privacyText}>How it works</Text>
+      </Pressable>
+
       <Pressable
         onPress={() => Linking.openURL('https://joeblair.github.io/familyflow/privacy.html')}
         style={styles.privacy}
       >
         <Text style={styles.privacyText}>Privacy policy</Text>
       </Pressable>
+
+      <Modal visible={howto} animationType="slide" onRequestClose={() => setHowto(false)}>
+        <IntroScreen onDone={() => setHowto(false)} />
+      </Modal>
 
       {/* Editor */}
       <Modal visible={!!editing} transparent animationType="slide" onRequestClose={() => setEditing(null)}>

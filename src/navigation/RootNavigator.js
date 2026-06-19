@@ -1,5 +1,6 @@
-import React from 'react';
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Pressable, ActivityIndicator, Modal } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -7,6 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useApp } from '../context/AppContext';
 import AuthScreen from '../screens/AuthScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import IntroScreen from '../screens/IntroScreen';
 import ChoresScreen from '../screens/ChoresScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import ChartsScreen from '../screens/ChartsScreen';
@@ -66,8 +68,23 @@ function Tabs() {
   );
 }
 
+const INTRO_KEY = 'ff_intro_seen_v1';
+
 export default function RootNavigator() {
   const { booting, session, profileLoaded, hasFamily } = useApp();
+  // null = still loading the flag; false = show the one-time walkthrough.
+  const [introSeen, setIntroSeen] = useState(null);
+
+  useEffect(() => {
+    AsyncStorage.getItem(INTRO_KEY)
+      .then((v) => setIntroSeen(v === '1'))
+      .catch(() => setIntroSeen(true));
+  }, []);
+
+  const dismissIntro = () => {
+    setIntroSeen(true);
+    AsyncStorage.setItem(INTRO_KEY, '1').catch(() => {});
+  };
 
   if (booting) return <Splash />;
 
@@ -80,20 +97,25 @@ export default function RootNavigator() {
       ) : !hasFamily ? (
         <OnboardingScreen />
       ) : (
-        <Stack.Navigator>
-          <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
-          <Stack.Screen
-            name="Family"
-            component={MembersScreen}
-            options={{
-              presentation: 'modal',
-              headerStyle: { backgroundColor: colors.bg },
-              headerTitleStyle: { fontFamily: fonts.serif, color: colors.ink, fontSize: 22 },
-              headerShadowVisible: false,
-              title: 'Family',
-            }}
-          />
-        </Stack.Navigator>
+        <>
+          <Stack.Navigator>
+            <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
+            <Stack.Screen
+              name="Family"
+              component={MembersScreen}
+              options={{
+                presentation: 'modal',
+                headerStyle: { backgroundColor: colors.bg },
+                headerTitleStyle: { fontFamily: fonts.serif, color: colors.ink, fontSize: 22 },
+                headerShadowVisible: false,
+                title: 'Family',
+              }}
+            />
+          </Stack.Navigator>
+          <Modal visible={introSeen === false} animationType="fade" onRequestClose={dismissIntro}>
+            <IntroScreen onDone={dismissIntro} />
+          </Modal>
+        </>
       )}
     </NavigationContainer>
   );
