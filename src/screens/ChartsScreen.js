@@ -5,7 +5,7 @@ import Doughnut, { DoughnutLegend } from '../components/Doughnut';
 import LoadBar from '../components/LoadBar';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
 import { useApp } from '../context/AppContext';
-import { DOMAINS, colors, fonts } from '../theme/colors';
+import { DOMAINS, domainColors, domainLabels, colors, fonts } from '../theme/colors';
 
 const CHORE_LOAD_CAP = 10;
 
@@ -25,9 +25,16 @@ export default function ChartsScreen() {
 
   const totalFor = (id) => DOMAINS.reduce((s, d) => s + (countsByMember[id]?.[d] || 0), 0);
 
-  // Daily mental load = number of daily chores each person carries.
-  const dailyCount = (id) => chores.filter((c) => c.frequency === 'daily' && c.assignee === id).length;
-  const maxDaily = Math.max(1, ...members.map((m) => dailyCount(m.id)));
+  // Mental load = who owns an area in their head. We proxy "ownership" by who
+  // carries the most chores in each domain — the household's default for it.
+  const areaStats = (d) => {
+    const rows = members
+      .map((m) => ({ m, count: countsByMember[m.id]?.[d] || 0 }))
+      .filter((r) => r.count > 0);
+    const total = rows.reduce((s, r) => s + r.count, 0);
+    const top = [...rows].sort((a, b) => b.count - a.count)[0];
+    return { rows, total, top };
+  };
 
   if (members.length === 0) {
     return (
@@ -56,18 +63,24 @@ export default function ChartsScreen() {
 
       <Rule style={{ marginTop: 26, marginBottom: 18 }} />
       <Eyebrow>The Invisible Work</Eyebrow>
-      <Masthead size={24} style={{ marginTop: 4 }}>Daily Mental Load</Masthead>
-      <Text style={styles.dek}>The daily chores each person carries.</Text>
-      {members.map((m) => {
-        const count = dailyCount(m.id);
+      <Masthead size={24} style={{ marginTop: 4 }}>Who Carries Each Area</Masthead>
+      <Text style={styles.dek}>Mental load is about who owns an area in their head. This shows who holds the most in each — a nudge to share the defaults, not a scoreboard.</Text>
+      {DOMAINS.map((d) => {
+        const { rows, total, top } = areaStats(d);
+        const caption = total === 0 ? 'No one yet' : top.count / total >= 0.6 ? `Mostly ${top.m.name}` : 'Shared';
         return (
-          <View key={m.id} style={styles.mlRow}>
-            <View style={styles.mlHead}>
-              <Text style={styles.loadName}>{m.name}</Text>
-              <Text style={styles.mlCount}>{count} {count === 1 ? 'task' : 'tasks'} / day</Text>
+          <View key={d} style={styles.areaRow}>
+            <View style={styles.areaHead}>
+              <View style={styles.areaLabelWrap}>
+                <View style={[styles.areaDot, { backgroundColor: domainColors[d] }]} />
+                <Text style={styles.areaLabel}>{domainLabels[d]}</Text>
+              </View>
+              <Text style={styles.areaCaption}>{caption}</Text>
             </View>
-            <View style={styles.mlTrack}>
-              <View style={[styles.mlFill, { width: `${(count / maxDaily) * 100}%`, backgroundColor: m.color }]} />
+            <View style={styles.areaTrack}>
+              {rows.map((r) => (
+                <View key={r.m.id} style={{ flex: r.count, backgroundColor: r.m.color }} />
+              ))}
             </View>
           </View>
         );
@@ -98,7 +111,7 @@ export default function ChartsScreen() {
       <Rule style={{ marginTop: 26, marginBottom: 18 }} />
       <Eyebrow>The Balance</Eyebrow>
       <Masthead size={24} style={{ marginTop: 4 }}>Combined Load</Masthead>
-      <Text style={styles.dek}>Chores, paid work, and free time.</Text>
+      <Text style={styles.dek}>A rough shared picture of everyone's week — chores, paid work, and free time. Meant for awareness, not a precise score.</Text>
       {members.map((m) => {
         const workPct = m.workPct;
         const chorePct = Math.min(totalFor(m.id) / CHORE_LOAD_CAP, 1) * (100 - workPct);
@@ -132,9 +145,11 @@ const styles = StyleSheet.create({
   workPct: { fontSize: 13, fontWeight: '700', color: colors.ink, width: 42, textAlign: 'right' },
   loadRow: { marginTop: 18 },
   loadName: { fontFamily: fonts.serif, fontSize: 17, color: colors.ink, marginBottom: 10 },
-  mlRow: { marginTop: 16 },
-  mlHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 },
-  mlCount: { fontSize: 12, color: colors.muted, letterSpacing: 0.5 },
-  mlTrack: { height: 14, backgroundColor: colors.line },
-  mlFill: { height: '100%' },
+  areaRow: { marginTop: 16 },
+  areaHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  areaLabelWrap: { flexDirection: 'row', alignItems: 'center' },
+  areaDot: { width: 10, height: 10, borderRadius: 5, marginRight: 8 },
+  areaLabel: { fontFamily: fonts.serif, fontSize: 17, color: colors.ink },
+  areaCaption: { fontSize: 12, color: colors.muted, letterSpacing: 0.3 },
+  areaTrack: { height: 14, backgroundColor: colors.line, flexDirection: 'row', overflow: 'hidden' },
 });
