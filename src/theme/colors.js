@@ -1,5 +1,3 @@
-import { Platform } from 'react-native';
-
 // FamilyFlow — "Editorial Family" palette. Keeps the magazine bones (warm
 // paper canvas, near-black ink, hairline rules, a metallic gold accent) so the
 // app still stands out and feels aspirational — but the accents are now joyful
@@ -29,10 +27,11 @@ export const colors = {
   plum: '#A85674', // berry
 };
 
-// Typography. Didot is the quintessential fashion-magazine serif on iOS.
+// Typography. Playfair Display is a Didot-style fashion-magazine serif, bundled
+// via expo-font (see App.js) so it renders identically on iOS and Android.
 export const fonts = {
-  serif: Platform.select({ ios: 'Didot', android: 'serif', default: 'serif' }),
-  serifBold: Platform.select({ ios: 'Didot-Bold', android: 'serif', default: 'serif' }),
+  serif: 'PlayfairDisplay',
+  serifBold: 'PlayfairDisplay-Bold',
 };
 
 // Domain -> colour (joyful jewel accents)
