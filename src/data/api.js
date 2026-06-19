@@ -101,6 +101,14 @@ export async function setActiveMember(memberId) {
   if (error) throw error;
 }
 
+// Permanently delete the caller's account and their data (see the
+// delete_account RPC). Signs out afterwards to clear the local session.
+export async function deleteAccount() {
+  const { error } = await supabase.rpc('delete_account');
+  if (error) throw error;
+  await supabase.auth.signOut();
+}
+
 // ──────────────────────────── fetchers ─────────────────────────────────
 export async function fetchFamily(familyId) {
   const { data, error } = await supabase

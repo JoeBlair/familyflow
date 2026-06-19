@@ -6,7 +6,7 @@ import { useApp } from '../context/AppContext';
 import { MEMBER_COLORS, colors, fonts } from '../theme/colors';
 
 export default function MembersScreen() {
-  const { family, members, activeMember, addMember, updateMember, deleteMember, signOut } = useApp();
+  const { family, members, activeMember, addMember, updateMember, deleteMember, signOut, deleteAccount } = useApp();
 
   const [editing, setEditing] = useState(null);
   const [name, setName] = useState('');
@@ -43,6 +43,29 @@ export default function MembersScreen() {
   const shareInvite = () => {
     if (!family) return;
     Share.share({ message: `Join our family on FamilyFlow. Invite code: ${family.inviteCode}` });
+  };
+
+  const confirmDeleteAccount = () => {
+    Alert.alert(
+      'Delete account',
+      'This permanently deletes your account and removes you from the family. ' +
+        'If you are the last member, the family and all its chores are deleted too. ' +
+        'This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete account',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteAccount();
+            } catch (e) {
+              Alert.alert('Could not delete account', e.message);
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -102,6 +125,10 @@ export default function MembersScreen() {
         <Text style={styles.signoutText}>Sign out</Text>
       </Pressable>
 
+      <Pressable onPress={confirmDeleteAccount} style={styles.deleteAccount}>
+        <Text style={styles.deleteAccountText}>Delete account</Text>
+      </Pressable>
+
       {/* Editor */}
       <Modal visible={!!editing} transparent animationType="slide" onRequestClose={() => setEditing(null)}>
         <View style={styles.backdrop}>
@@ -142,6 +169,8 @@ const styles = StyleSheet.create({
   addText: { fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase', color: colors.ink },
   signout: { alignItems: 'center', marginTop: 28 },
   signoutText: { color: colors.muted, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', fontWeight: '600' },
+  deleteAccount: { alignItems: 'center', marginTop: 18 },
+  deleteAccountText: { color: '#9E5B6B', fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', fontWeight: '600' },
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: '#0008' },
   sheet: { backgroundColor: colors.bg, padding: 22, paddingBottom: 40 },
   sheetBtns: { flexDirection: 'row', gap: 12, marginTop: 26 },

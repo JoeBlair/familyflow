@@ -7,9 +7,19 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Alert } from 'react-native';
 import * as api from '../data/api';
 
 const AppContext = createContext(null);
+
+// Surface a failed action to the user instead of swallowing it. Fire-and-forget
+// mutations (tap to tick / claim / delete) have no screen-level catch, so a
+// failed write would otherwise vanish silently and look like a broken app.
+function reportError(title, e) {
+  const message = e?.message || 'Something went wrong. Please try again.';
+  console.warn(title, message);
+  Alert.alert(title, message);
+}
 
 export function AppProvider({ children }) {
   // auth + profile
@@ -165,6 +175,7 @@ export function AppProvider({ children }) {
       signUp: (email, password) => api.auth.signUp(email, password),
       signIn: (email, password) => api.auth.signIn(email, password),
       signOut: () => api.auth.signOut(),
+      deleteAccount: () => api.deleteAccount(),
 
       // onboarding
       createFamily: async (name, member) => {
@@ -178,28 +189,34 @@ export function AppProvider({ children }) {
 
       // chores
       addChore: async (chore) => {
-        await api.addChore(fid, chore);
-        await refreshChores(fid);
+        try {
+          await api.addChore(fid, chore);
+          await refreshChores(fid);
+        } catch (e) { reportError("Couldn't add chore", e); }
       },
       deleteChore: async (id) => {
-        await api.deleteChore(id);
-        await refreshChores(fid);
+        try {
+          await api.deleteChore(id);
+          await refreshChores(fid);
+        } catch (e) { reportError("Couldn't delete chore", e); }
       },
       claimChore: async (id, memberId) => {
-        await api.setChoreAssignee(id, memberId);
-        await refreshChores(fid);
+        try {
+          await api.setChoreAssignee(id, memberId);
+          await refreshChores(fid);
+        } catch (e) { reportError("Couldn't claim chore", e); }
       },
       scheduleChore: async (id, calDay, calSlot) => {
         try {
           await api.setChoreSchedule(id, { calDay, calSlot });
           await refreshChores(fid);
-        } catch (e) {
-          console.warn('scheduleChore failed (run the calendar/check-in migration?)', e.message);
-        }
+        } catch (e) { reportError("Couldn't schedule chore", e); }
       },
       toggleDone: async (chore) => {
-        await api.toggleChoreDone(chore, activeMember?.id ?? null);
-        await refreshChores(fid);
+        try {
+          await api.toggleChoreDone(chore, activeMember?.id ?? null);
+          await refreshChores(fid);
+        } catch (e) { reportError("Couldn't update chore", e); }
       },
 
       // members
@@ -212,22 +229,30 @@ export function AppProvider({ children }) {
         await refreshMembers(fid);
       },
       deleteMember: async (id) => {
-        await api.deleteMember(id);
-        await refreshMembers(fid);
+        try {
+          await api.deleteMember(id);
+          await refreshMembers(fid);
+        } catch (e) { reportError("Couldn't remove member", e); }
       },
       setMemberWork: async (id, workPct) => {
-        await api.updateMember(id, { workPct });
-        await refreshMembers(fid);
+        try {
+          await api.updateMember(id, { workPct });
+          await refreshMembers(fid);
+        } catch (e) { reportError("Couldn't update workload", e); }
       },
 
       // battle
       setWeeklyStake: async (stake) => {
-        await api.setWeeklyStake(fid, stake);
-        await refreshFamily(fid);
+        try {
+          await api.setWeeklyStake(fid, stake);
+          await refreshFamily(fid);
+        } catch (e) { reportError("Couldn't set the stake", e); }
       },
       addBattle: async (battle) => {
-        await api.addBattle(fid, battle);
-        await refreshBattles(fid);
+        try {
+          await api.addBattle(fid, battle);
+          await refreshBattles(fid);
+        } catch (e) { reportError("Couldn't save the result", e); }
       },
 
       // check-in ratings
@@ -235,9 +260,7 @@ export function AppProvider({ children }) {
         try {
           await api.rateTask(fid, rating);
           await refreshRatings(fid);
-        } catch (e) {
-          console.warn('rateTask failed (run the calendar/check-in migration?)', e.message);
-        }
+        } catch (e) { reportError("Couldn't save your rating", e); }
       },
     }),
     [fid, activeMember?.id, refreshProfile, refreshChores, refreshMembers, refreshFamily, refreshBattles, refreshRatings]
