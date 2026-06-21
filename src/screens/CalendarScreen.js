@@ -12,7 +12,7 @@ const DAY_SHORT = { mon: 'Mo', tue: 'Tu', wed: 'We', thu: 'Th', fri: 'Fr', sat: 
 const DAY_LABEL = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' };
 // Only morning/afternoon until the DB cal_slot check constraint adds 'evening'.
 const SLOTS = ['morning', 'afternoon'];
-const SLOT_SHORT = { morning: 'Morn', afternoon: 'Aft' };
+const SLOT_SHORT = { morning: 'AM', afternoon: 'PM' };
 const DOTS_SHOWN = 4;
 
 export default function CalendarScreen() {
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
 
   // every-day rows
   dailyRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
-  dailyLabel: { width: 44, fontSize: 10, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', color: colors.muted },
+  dailyLabel: { width: 44, fontSize: 10, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', color: colors.muted, textAlign: 'center' },
   dailyChips: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 6, alignItems: 'center' },
   dailyEmpty: { color: colors.line, fontSize: 16 },
   chip: { flexDirection: 'row', alignItems: 'center', paddingVertical: 5, paddingHorizontal: 9, borderRadius: 999, maxWidth: 180 },
