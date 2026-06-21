@@ -85,7 +85,7 @@ export default function CalendarScreen() {
       <Text style={styles.section}>Every day</Text>
       {SLOTS.map((slot) => (
         <Pressable key={`daily-${slot}`} style={styles.dailyRow} onPress={() => setCell({ day: null, slot })}>
-          <Eyebrow color={colors.muted} style={styles.dailyLabel}>{SLOT_SHORT[slot]}</Eyebrow>
+          <Text style={styles.dailyLabel} numberOfLines={1}>{SLOT_SHORT[slot]}</Text>
           <View style={styles.dailyChips}>
             {dailyBySlot(slot).length === 0 ? (
               <Text style={styles.dailyEmpty}>—</Text>
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
 
   // every-day rows
   dailyRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8 },
-  dailyLabel: { width: 44 },
+  dailyLabel: { width: 44, fontSize: 10, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', color: colors.muted },
   dailyChips: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 6, alignItems: 'center' },
   dailyEmpty: { color: colors.line, fontSize: 16 },
   chip: { flexDirection: 'row', alignItems: 'center', paddingVertical: 5, paddingHorizontal: 9, borderRadius: 999, maxWidth: 180 },
