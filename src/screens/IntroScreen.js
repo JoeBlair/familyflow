@@ -26,7 +26,7 @@ const CARDS = [
     emoji: '💛',
     eyebrow: 'See & appreciate',
     title: 'Notice the load',
-    body: 'Charts show how the work is really split — including who carries each area in their head. The weekly Check-in lets you send a little thanks.',
+    body: 'Charts show how the week is shared between you — for awareness, not a scoreboard. The weekly Check-in lets you thank each other for what got done.',
   },
   {
     emoji: '🎮',
