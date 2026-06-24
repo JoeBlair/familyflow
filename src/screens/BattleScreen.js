@@ -11,6 +11,9 @@ export default function BattleScreen() {
   const { chores, members, family, setWeeklyStake, claimChore, addBattle, battles } = useApp();
   const thisWeek = weekKey();
 
+  // Family + children can play the forfeit; home help is excluded.
+  const players = useMemo(() => members.filter((m) => m.role !== 'helper'), [members]);
+
   const memberById = useMemo(() => {
     const m = {};
     members.forEach((x) => (m[x.id] = x));
@@ -22,15 +25,15 @@ export default function BattleScreen() {
   const [picking, setPicking] = useState(null);
 
   useEffect(() => {
-    if (members.length >= 2) {
-      if (!fighterA || !memberById[fighterA]) setFighterA(members[0].id);
+    if (players.length >= 2) {
+      if (!fighterA || !memberById[fighterA]) setFighterA(players[0].id);
       if (!fighterB || !memberById[fighterB] || fighterB === fighterA) {
-        const other = members.find((m) => m.id !== (fighterA || members[0].id));
+        const other = players.find((m) => m.id !== (fighterA || players[0].id));
         if (other) setFighterB(other.id);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [members]);
+  }, [players]);
 
   const stake = family?.weeklyStake;
   useEffect(() => {
@@ -60,7 +63,7 @@ export default function BattleScreen() {
     });
   };
 
-  if (members.length < 2) {
+  if (players.length < 2) {
     return (
       <View style={styles.emptyWrap}>
         <Masthead size={26}>Two to play</Masthead>
@@ -136,16 +139,16 @@ export default function BattleScreen() {
       <MemberPickerModal
         visible={!!picking}
         title="Choose player"
-        members={members}
+        members={players}
         value={picking === 'a' ? fighterA : fighterB}
         allowUnassign={false}
         onSelect={(id) => {
           if (picking === 'a') {
             setFighterA(id);
-            if (id === fighterB) setFighterB(members.find((m) => m.id !== id)?.id || fighterB);
+            if (id === fighterB) setFighterB(players.find((m) => m.id !== id)?.id || fighterB);
           } else {
             setFighterB(id);
-            if (id === fighterA) setFighterA(members.find((m) => m.id !== id)?.id || fighterA);
+            if (id === fighterA) setFighterA(players.find((m) => m.id !== id)?.id || fighterA);
           }
         }}
         onClose={() => setPicking(null)}

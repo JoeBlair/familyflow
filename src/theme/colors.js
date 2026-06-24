@@ -75,6 +75,11 @@ export const MEMBER_EMOJIS = [
   '👩', '👨', '🧑', '👧', '👦', '👶', '🧓', '👵', '👴', '🐱', '🐶', '⭐️',
 ];
 
+// Member roles. 'member' = adult family; 'child' and 'helper' (home help) can be
+// assigned chores but are handled differently in charts / check-in / forfeit.
+export const ROLES = ['member', 'child', 'helper'];
+export const roleLabels = { member: 'Family', child: 'Child', helper: 'Home help' };
+
 export function memberColor(member) {
   return member ? member.color : colors.muted;
 }

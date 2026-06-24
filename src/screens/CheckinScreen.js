@@ -15,6 +15,9 @@ export default function CheckinScreen() {
   const { chores, members, ratings, activeMember, rateTask } = useApp();
   const thisWeek = weekKey();
 
+  // Family + children can be thanked; home help is left out of the check-in.
+  const people = members.filter((m) => m.role !== 'helper');
+
   const weeklyFor = (mid) => chores.filter((c) => c.frequency === 'weekly' && c.assignee === mid);
 
   // my thank-you on a specific done task (active member as the one giving thanks)
@@ -52,7 +55,7 @@ export default function CheckinScreen() {
       .filter((w) => w.total > 0);
   }, [ratings, thisWeek]);
 
-  if (members.length === 0 || !activeMember) {
+  if (people.length === 0 || !activeMember) {
     return (
       <View style={styles.emptyWrap}>
         <Text style={styles.emptyText}>Add family members to start the weekly check-in.</Text>
@@ -75,7 +78,7 @@ export default function CheckinScreen() {
         </Text>
       </View>
 
-      {members.map((m) => {
+      {people.map((m) => {
         const tasks = weeklyFor(m.id);
         const isMe = m.id === activeMember.id;
         const received = thanksReceived(m.id, thisWeek);

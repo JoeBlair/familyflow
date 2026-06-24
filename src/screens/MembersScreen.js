@@ -4,7 +4,7 @@ import MemberEditor from '../components/MemberEditor';
 import IntroScreen from './IntroScreen';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
 import { useApp } from '../context/AppContext';
-import { MEMBER_COLORS, colors, fonts } from '../theme/colors';
+import { MEMBER_COLORS, roleLabels, colors, fonts } from '../theme/colors';
 
 export default function MembersScreen() {
   const { family, members, activeMember, addMember, updateMember, deleteMember, signOut, deleteAccount } = useApp();
@@ -14,22 +14,24 @@ export default function MembersScreen() {
   const [name, setName] = useState('');
   const [color, setColor] = useState(MEMBER_COLORS[0]);
   const [emoji, setEmoji] = useState('🙂');
+  const [role, setRole] = useState('member');
 
   const openNew = () => {
     setName('');
     setColor(MEMBER_COLORS[members.length % MEMBER_COLORS.length]);
     setEmoji('🙂');
+    setRole('member');
     setEditing('new');
   };
   const openEdit = (m) => {
-    setName(m.name); setColor(m.color); setEmoji(m.emoji); setEditing(m);
+    setName(m.name); setColor(m.color); setEmoji(m.emoji); setRole(m.role || 'member'); setEditing(m);
   };
 
   const save = async () => {
     if (!name.trim()) return;
     try {
-      if (editing === 'new') await addMember({ name: name.trim(), color, emoji });
-      else await updateMember(editing.id, { name: name.trim(), color, emoji });
+      if (editing === 'new') await addMember({ name: name.trim(), color, emoji, role });
+      else await updateMember(editing.id, { name: name.trim(), color, emoji, role });
       setEditing(null);
     } catch (e) { Alert.alert('Could not save', e.message); }
   };
@@ -112,6 +114,9 @@ export default function MembersScreen() {
                 <Text style={styles.avatarEmoji}>{m.emoji}</Text>
               </View>
               <Text style={styles.memberName}>{m.name}</Text>
+              {m.role && m.role !== 'member' && (
+                <Text style={styles.roleTag}>{roleLabels[m.role]}</Text>
+              )}
               <Pressable onPress={() => openEdit(m)} hitSlop={8} style={styles.link}><Text style={styles.linkText}>Edit</Text></Pressable>
               <Pressable onPress={() => confirmDelete(m)} hitSlop={8} style={styles.link}><Text style={[styles.linkText, { color: '#9E5B6B' }]}>Remove</Text></Pressable>
             </View>
@@ -152,7 +157,7 @@ export default function MembersScreen() {
           <View style={styles.sheet}>
             <Eyebrow>{editing === 'new' ? 'New member' : 'Edit member'}</Eyebrow>
             <View style={{ height: 14 }} />
-            <MemberEditor name={name} setName={setName} color={color} setColor={setColor} emoji={emoji} setEmoji={setEmoji} namePlaceholder="Name" />
+            <MemberEditor name={name} setName={setName} color={color} setColor={setColor} emoji={emoji} setEmoji={setEmoji} role={role} setRole={setRole} showRole namePlaceholder="Name" />
             <View style={styles.sheetBtns}>
               <Pressable style={styles.cancel} onPress={() => setEditing(null)}><Text style={styles.cancelText}>Cancel</Text></Pressable>
               <Pressable style={[styles.saveBtn, !name.trim() && { opacity: 0.4 }]} onPress={save} disabled={!name.trim()}>
@@ -180,6 +185,7 @@ const styles = StyleSheet.create({
   avatar: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
   avatarEmoji: { fontSize: 17 },
   memberName: { flex: 1, fontFamily: fonts.serif, fontSize: 19, color: colors.ink },
+  roleTag: { fontSize: 9, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', color: colors.gold, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.gold, paddingHorizontal: 6, paddingVertical: 2, marginLeft: 8 },
   link: { marginLeft: 16 },
   linkText: { fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: colors.muted },
   addBtn: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.ink, paddingVertical: 14, alignItems: 'center', marginTop: 22 },

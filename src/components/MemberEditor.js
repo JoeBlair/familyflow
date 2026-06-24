@@ -1,8 +1,12 @@
 import React from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
-import { MEMBER_COLORS, MEMBER_EMOJIS, colors } from '../theme/colors';
+import { MEMBER_COLORS, MEMBER_EMOJIS, ROLES, roleLabels, colors } from '../theme/colors';
 
-export default function MemberEditor({ name, setName, color, setColor, emoji, setEmoji, namePlaceholder = 'Name' }) {
+export default function MemberEditor({
+  name, setName, color, setColor, emoji, setEmoji,
+  role, setRole, showRole = false,
+  namePlaceholder = 'Name',
+}) {
   return (
     <View>
       <TextInput
@@ -13,6 +17,23 @@ export default function MemberEditor({ name, setName, color, setColor, emoji, se
         style={styles.input}
         autoCapitalize="words"
       />
+
+      {showRole && (
+        <>
+          <Text style={styles.label}>Type</Text>
+          <View style={styles.row}>
+            {ROLES.map((r) => (
+              <Pressable
+                key={r}
+                onPress={() => setRole(r)}
+                style={[styles.roleChip, role === r && styles.roleChipActive]}
+              >
+                <Text style={[styles.roleText, role === r && styles.roleTextActive]}>{roleLabels[r]}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </>
+      )}
 
       <Text style={styles.label}>Colour</Text>
       <View style={styles.row}>
@@ -42,4 +63,8 @@ const styles = StyleSheet.create({
   emojiBtn: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
   emojiActive: { borderColor: colors.gold, borderWidth: 1.5 },
   emojiText: { fontSize: 19 },
+  roleChip: { paddingVertical: 8, paddingHorizontal: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
+  roleChipActive: { backgroundColor: colors.ink, borderColor: colors.ink },
+  roleText: { fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: colors.charcoal },
+  roleTextActive: { color: colors.paper },
 });

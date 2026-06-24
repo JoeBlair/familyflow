@@ -13,6 +13,9 @@ const FAIR_GAP = 15; // how close two people's load must be to count as "balance
 export default function ChartsScreen() {
   const { members, chores, setMemberWork } = useApp();
 
+  // Charts is about the adults sharing the load — exclude children and home help.
+  const fam = useMemo(() => members.filter((m) => m.role === 'member'), [members]);
+
   const countsByMember = useMemo(() => {
     const base = {};
     members.forEach((m) => {
@@ -40,18 +43,18 @@ export default function ChartsScreen() {
 
   // The headline read: is the load fairly shared?
   const verdict = useMemo(() => {
-    if (members.length < 2) {
+    if (fam.length < 2) {
       return 'Add another family member to see how the week is shared.';
     }
-    const loads = members.map((m) => ({ m, busy: loadFor(m).busy }));
+    const loads = fam.map((m) => ({ m, busy: loadFor(m).busy }));
     const max = loads.reduce((a, b) => (b.busy > a.busy ? b : a));
     const min = loads.reduce((a, b) => (b.busy < a.busy ? b : a));
     if (max.busy - min.busy <= FAIR_GAP) return 'Looks fairly shared this week.';
     return 'A bit uneven this week — a good moment to check in with each other.';
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [members, chores]);
+  }, [fam, chores]);
 
-  if (members.length === 0) {
+  if (fam.length === 0) {
     return (
       <View style={styles.empty}>
         <Text style={styles.emptyText}>Add family members to see how the load is shared.</Text>
@@ -71,7 +74,7 @@ export default function ChartsScreen() {
         <Text style={styles.verdictText}>{verdict}</Text>
       </View>
 
-      {members.map((m) => {
+      {fam.map((m) => {
         const { workPct, chorePct, freePct } = loadFor(m);
         return (
           <View key={m.id} style={styles.loadRow}>
@@ -92,7 +95,7 @@ export default function ChartsScreen() {
       <Eyebrow>Engagements</Eyebrow>
       <Masthead size={24} style={{ marginTop: 4 }}>Paid Work</Masthead>
       <Text style={styles.dek}>Set how many days a week each person works for pay — it feeds the balance above.</Text>
-      {members.map((m) => {
+      {fam.map((m) => {
         const days = workDaysOf(m);
         return (
           <View key={m.id} style={styles.workRow}>
@@ -118,7 +121,7 @@ export default function ChartsScreen() {
       <Eyebrow>The Division</Eyebrow>
       <Masthead size={24} style={{ marginTop: 4 }}>Who Does What</Masthead>
       <Text style={styles.dek}>Claimed chores by category, per person.</Text>
-      {members.map((m) => (
+      {fam.map((m) => (
         <View key={m.id}>
           <Text style={[styles.person, { color: m.color }]}>{m.name}</Text>
           <View style={styles.doughnutWrap}>

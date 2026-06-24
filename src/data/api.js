@@ -33,6 +33,7 @@ const rowToMember = (r) => ({
   emoji: r.emoji,
   workPct: r.work_pct,
   userId: r.user_id,
+  role: r.role ?? 'member',
 });
 
 const rowToBattle = (r) => ({
@@ -196,10 +197,10 @@ export async function toggleChoreDone(chore, memberId) {
   if (error) throw error;
 }
 
-export async function addMember(familyId, { name, color, emoji }) {
+export async function addMember(familyId, { name, color, emoji, role }) {
   const { error } = await supabase
     .from('members')
-    .insert({ family_id: familyId, name, color, emoji });
+    .insert({ family_id: familyId, name, color, emoji, role: role ?? 'member' });
   if (error) throw error;
 }
 
@@ -209,6 +210,7 @@ export async function updateMember(id, patch) {
   if (patch.color !== undefined) row.color = patch.color;
   if (patch.emoji !== undefined) row.emoji = patch.emoji;
   if (patch.workPct !== undefined) row.work_pct = patch.workPct;
+  if (patch.role !== undefined) row.role = patch.role;
   const { error } = await supabase.from('members').update(row).eq('id', id);
   if (error) throw error;
 }
