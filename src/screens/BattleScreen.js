@@ -168,8 +168,13 @@ function FighterPick({ member, onPress }) {
   );
 }
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+// Manual formatting — Hermes (RN's engine) doesn't reliably support
+// toLocaleDateString with options, which crashed the app on the first win.
 function formatDate(iso) {
-  return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
 }
 
 const styles = StyleSheet.create({
