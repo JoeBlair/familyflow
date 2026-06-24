@@ -9,6 +9,7 @@ import { useApp } from '../context/AppContext';
 import AuthScreen from '../screens/AuthScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import IntroScreen from '../screens/IntroScreen';
+import MyTasksScreen from '../screens/MyTasksScreen';
 import ChoresScreen from '../screens/ChoresScreen';
 import CalendarScreen from '../screens/CalendarScreen';
 import ChartsScreen from '../screens/ChartsScreen';
@@ -59,6 +60,7 @@ function Tabs() {
         ),
       }}
     >
+      <Tab.Screen name="Mine" component={MyTasksScreen} />
       <Tab.Screen name="Weekly" component={ChoresScreen} />
       <Tab.Screen name="Calendar" component={CalendarScreen} />
       <Tab.Screen name="Charts" component={ChartsScreen} />
