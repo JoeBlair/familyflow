@@ -165,6 +165,20 @@ export async function addChore(familyId, { title, frequency, domain, calDay, cal
   if (error) throw error;
 }
 
+// Bulk-insert chores (used by the first-run setup picker).
+export async function addChores(familyId, list) {
+  if (!list || !list.length) return;
+  const rows = list.map((c) => ({
+    family_id: familyId,
+    title: c.title,
+    frequency: c.frequency,
+    domain: c.domain,
+    is_custom: false,
+  }));
+  const { error } = await supabase.from('chores').insert(rows);
+  if (error) throw error;
+}
+
 export async function setChoreSchedule(id, { calDay, calSlot }) {
   const { error } = await supabase
     .from('chores')

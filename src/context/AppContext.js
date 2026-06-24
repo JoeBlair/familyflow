@@ -194,6 +194,12 @@ export function AppProvider({ children }) {
           await refreshChores(fid);
         } catch (e) { reportError("Couldn't add chore", e); }
       },
+      addChores: async (list) => {
+        try {
+          await api.addChores(fid, list);
+          await refreshChores(fid);
+        } catch (e) { reportError("Couldn't add chores", e); }
+      },
       deleteChore: async (id) => {
         try {
           await api.deleteChore(id);

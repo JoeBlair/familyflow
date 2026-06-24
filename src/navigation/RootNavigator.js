@@ -9,6 +9,7 @@ import { useApp } from '../context/AppContext';
 import AuthScreen from '../screens/AuthScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import IntroScreen from '../screens/IntroScreen';
+import ChoreSetupScreen from '../screens/ChoreSetupScreen';
 import MyTasksScreen from '../screens/MyTasksScreen';
 import ChoresScreen from '../screens/ChoresScreen';
 import CalendarScreen from '../screens/CalendarScreen';
@@ -71,22 +72,38 @@ function Tabs() {
 }
 
 const INTRO_KEY = 'ff_intro_seen_v1';
+const CHORE_SETUP_KEY = 'ff_chore_setup_v1';
 
 export default function RootNavigator() {
-  const { booting, session, profileLoaded, hasFamily } = useApp();
+  const { booting, session, profileLoaded, hasFamily, chores, loadingFamily } = useApp();
   // null = still loading the flag; false = show the one-time walkthrough.
   const [introSeen, setIntroSeen] = useState(null);
+  const [choreSetupSeen, setChoreSetupSeen] = useState(null);
 
   useEffect(() => {
     AsyncStorage.getItem(INTRO_KEY)
       .then((v) => setIntroSeen(v === '1'))
       .catch(() => setIntroSeen(true));
+    AsyncStorage.getItem(CHORE_SETUP_KEY)
+      .then((v) => setChoreSetupSeen(v === '1'))
+      .catch(() => setChoreSetupSeen(true));
   }, []);
 
   const dismissIntro = () => {
     setIntroSeen(true);
     AsyncStorage.setItem(INTRO_KEY, '1').catch(() => {});
   };
+
+  const dismissChoreSetup = () => {
+    setChoreSetupSeen(true);
+    AsyncStorage.setItem(CHORE_SETUP_KEY, '1').catch(() => {});
+  };
+
+  // After the intro, a freshly created family with no chores yet gets the
+  // one-time setup picker. Joiners land in a family that already has chores,
+  // so they never see it.
+  const needChoreSetup =
+    introSeen === true && choreSetupSeen === false && !loadingFamily && chores.length === 0;
 
   if (booting) return <Splash />;
 
@@ -116,6 +133,9 @@ export default function RootNavigator() {
           </Stack.Navigator>
           <Modal visible={introSeen === false} animationType="fade" onRequestClose={dismissIntro}>
             <IntroScreen onDone={dismissIntro} />
+          </Modal>
+          <Modal visible={needChoreSetup} animationType="slide" onRequestClose={dismissChoreSetup}>
+            <ChoreSetupScreen onDone={dismissChoreSetup} />
           </Modal>
         </>
       )}
