@@ -42,8 +42,8 @@ export default function ChartsScreen() {
     const loads = members.map((m) => ({ m, busy: loadFor(m).busy }));
     const max = loads.reduce((a, b) => (b.busy > a.busy ? b : a));
     const min = loads.reduce((a, b) => (b.busy < a.busy ? b : a));
-    if (max.busy - min.busy <= FAIR_GAP) return 'Fairly balanced this week. Nicely shared.';
-    return `${max.m.name} is carrying the most right now — worth a look.`;
+    if (max.busy - min.busy <= FAIR_GAP) return 'Looks fairly shared this week.';
+    return 'A bit uneven this week — a good moment to check in with each other.';
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [members, chores]);
 
@@ -59,10 +59,11 @@ export default function ChartsScreen() {
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 20, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
       {/* HERO: the takeaway first — is it fair? */}
       <Eyebrow>The Balance</Eyebrow>
-      <Masthead style={{ marginTop: 4 }}>Is It Fair?</Masthead>
+      <Masthead style={{ marginTop: 4 }}>How It Looks</Masthead>
+      <Text style={styles.dek}>A rough shared picture from chores and paid work — for awareness and a chat, not a precise score.</Text>
 
       <View style={styles.verdict}>
-        <Text style={styles.verdictEmoji}>⚖️</Text>
+        <Text style={styles.verdictEmoji}>💛</Text>
         <Text style={styles.verdictText}>{verdict}</Text>
       </View>
 
