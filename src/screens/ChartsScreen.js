@@ -26,9 +26,13 @@ export default function ChartsScreen() {
 
   const totalFor = (id) => DOMAINS.reduce((s, d) => s + (countsByMember[id]?.[d] || 0), 0);
 
+  // The work_pct column now stores paid-work DAYS per week (0–7). Clamp guards
+  // any legacy values; convert to a share of the week for the balance maths.
+  const workDaysOf = (m) => Math.max(0, Math.min(Number(m.workPct) || 0, 7));
+
   // Each person's week split into chores / paid work / free time.
   const loadFor = (m) => {
-    const workPct = m.workPct;
+    const workPct = (workDaysOf(m) / 7) * 100;
     const chorePct = Math.min(totalFor(m.id) / CHORE_LOAD_CAP, 1) * (100 - workPct);
     const freePct = Math.max(100 - workPct - chorePct, 0);
     return { workPct, chorePct, freePct, busy: workPct + chorePct };
@@ -87,24 +91,27 @@ export default function ChartsScreen() {
       <Rule style={{ marginTop: 28, marginBottom: 16 }} />
       <Eyebrow>Engagements</Eyebrow>
       <Masthead size={24} style={{ marginTop: 4 }}>Paid Work</Masthead>
-      <Text style={styles.dek}>Set how much of each person’s week goes to paid work — it feeds the balance above.</Text>
-      {members.map((m) => (
-        <View key={m.id} style={styles.workRow}>
-          <Text style={styles.workName} numberOfLines={1}>{m.name}</Text>
-          <Slider
-            style={{ flex: 1, marginHorizontal: 12 }}
-            minimumValue={0}
-            maximumValue={100}
-            step={5}
-            value={m.workPct}
-            onSlidingComplete={(v) => setMemberWork(m.id, Math.round(v))}
-            minimumTrackTintColor={m.color}
-            maximumTrackTintColor={colors.line}
-            thumbTintColor={m.color}
-          />
-          <Text style={styles.workPct}>{m.workPct}%</Text>
-        </View>
-      ))}
+      <Text style={styles.dek}>Set how many days a week each person works for pay — it feeds the balance above.</Text>
+      {members.map((m) => {
+        const days = workDaysOf(m);
+        return (
+          <View key={m.id} style={styles.workRow}>
+            <Text style={styles.workName} numberOfLines={1}>{m.name}</Text>
+            <Slider
+              style={{ flex: 1, marginHorizontal: 12 }}
+              minimumValue={0}
+              maximumValue={7}
+              step={1}
+              value={days}
+              onSlidingComplete={(v) => setMemberWork(m.id, Math.round(v))}
+              minimumTrackTintColor={m.color}
+              maximumTrackTintColor={colors.line}
+              thumbTintColor={m.color}
+            />
+            <Text style={styles.workPct}>{days} {days === 1 ? 'day' : 'days'}</Text>
+          </View>
+        );
+      })}
 
       {/* The detail: who does what, by category */}
       <Rule style={{ marginTop: 28, marginBottom: 16 }} />
@@ -136,7 +143,7 @@ const styles = StyleSheet.create({
   loadName: { fontFamily: fonts.serif, fontSize: 17, color: colors.ink, marginBottom: 10 },
   workRow: { flexDirection: 'row', alignItems: 'center', marginTop: 16 },
   workName: { fontFamily: fonts.serif, fontSize: 17, color: colors.ink, width: 90 },
-  workPct: { fontSize: 13, fontWeight: '700', color: colors.ink, width: 42, textAlign: 'right' },
+  workPct: { fontSize: 13, fontWeight: '700', color: colors.ink, width: 58, textAlign: 'right' },
   person: { fontFamily: fonts.serif, fontSize: 22, marginTop: 20, marginBottom: 8 },
   doughnutWrap: { alignItems: 'center', marginTop: 8 },
 });
