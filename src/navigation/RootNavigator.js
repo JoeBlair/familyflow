@@ -55,7 +55,8 @@ function Tabs() {
         tabBarActiveTintColor: colors.ink,
         tabBarInactiveTintColor: colors.muted,
         tabBarStyle: { backgroundColor: colors.bg, borderTopWidth: 0, height: 84, paddingTop: 14 },
-        tabBarLabelStyle: { fontSize: 9, fontWeight: '700', letterSpacing: 1.4, textTransform: 'uppercase' },
+        tabBarLabelStyle: { fontSize: 8, fontWeight: '700', letterSpacing: 0.2, textTransform: 'uppercase' },
+        tabBarItemStyle: { paddingHorizontal: 0 },
         tabBarIcon: ({ focused }) => (
           <View style={{ width: 5, height: 5, borderRadius: 3, marginBottom: 3, backgroundColor: focused ? colors.gold : 'transparent' }} />
         ),
