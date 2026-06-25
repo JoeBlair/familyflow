@@ -55,19 +55,17 @@ function Tabs() {
         tabBarActiveTintColor: colors.ink,
         tabBarInactiveTintColor: colors.muted,
         tabBarStyle: { backgroundColor: colors.bg, borderTopWidth: 0, height: 84, paddingTop: 14 },
-        tabBarLabelStyle: { fontSize: 8, fontWeight: '700', letterSpacing: 0.2, textTransform: 'uppercase' },
-        tabBarItemStyle: { paddingHorizontal: 0 },
+        tabBarLabelStyle: { fontSize: 10.5, fontWeight: '700', letterSpacing: 0.6, textTransform: 'uppercase' },
         tabBarIcon: ({ focused }) => (
           <View style={{ width: 5, height: 5, borderRadius: 3, marginBottom: 3, backgroundColor: focused ? colors.gold : 'transparent' }} />
         ),
       }}
     >
       <Tab.Screen name="Mine" component={MyTasksScreen} />
-      <Tab.Screen name="Weekly" component={ChoresScreen} />
-      <Tab.Screen name="Calendar" component={CalendarScreen} />
-      <Tab.Screen name="Charts" component={ChartsScreen} />
-      <Tab.Screen name="Check-in" component={CheckinScreen} />
-      <Tab.Screen name="Forfeit" component={BattleScreen} />
+      <Tab.Screen name="Weekly" component={ChoresScreen} options={{ tabBarLabel: 'Tasks' }} />
+      <Tab.Screen name="Calendar" component={CalendarScreen} options={{ tabBarLabel: 'Plan' }} />
+      <Tab.Screen name="Charts" component={ChartsScreen} options={{ tabBarLabel: 'Balance' }} />
+      <Tab.Screen name="Check-in" component={CheckinScreen} options={{ tabBarLabel: 'Thanks' }} />
     </Tab.Navigator>
   );
 }
@@ -129,6 +127,17 @@ export default function RootNavigator() {
                 headerTitleStyle: { fontFamily: fonts.serif, color: colors.ink, fontSize: 22 },
                 headerShadowVisible: false,
                 title: 'Family',
+              }}
+            />
+            <Stack.Screen
+              name="Forfeit"
+              component={BattleScreen}
+              options={{
+                presentation: 'modal',
+                headerStyle: { backgroundColor: colors.bg },
+                headerTitleStyle: { fontFamily: fonts.serif, color: colors.ink, fontSize: 22 },
+                headerShadowVisible: false,
+                title: 'Forfeit',
               }}
             />
           </Stack.Navigator>

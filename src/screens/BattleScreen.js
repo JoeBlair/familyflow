@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import ConnectFour from '../components/ConnectFour';
 import MemberPickerModal from '../components/MemberPickerModal';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
@@ -9,6 +10,8 @@ import { colors, fonts } from '../theme/colors';
 
 export default function BattleScreen() {
   const { chores, members, family, setWeeklyStake, claimChore, addBattle, battles } = useApp();
+  const route = useRoute();
+  const paramChoreId = route.params?.stakeChoreId; // launched from a specific chore
   const thisWeek = weekKey();
 
   // Family + children can play the forfeit; home help is excluded.
@@ -37,6 +40,7 @@ export default function BattleScreen() {
 
   const stake = family?.weeklyStake;
   useEffect(() => {
+    if (paramChoreId) return; // a specific chore was chosen — don't auto-pick
     if (!family) return;
     if (stake && stake.weekKey === thisWeek) return;
     const pool = chores.filter((c) => !c.assignee);
@@ -47,10 +51,10 @@ export default function BattleScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thisWeek, family?.id, stake?.weekKey, chores.length]);
 
-  const stakeChore = useMemo(
-    () => (stake ? chores.find((c) => c.id === stake.choreId) : null),
-    [stake, chores]
-  );
+  const stakeChore = useMemo(() => {
+    if (paramChoreId) return chores.find((c) => c.id === paramChoreId) || null;
+    return stake ? chores.find((c) => c.id === stake.choreId) : null;
+  }, [paramChoreId, stake, chores]);
 
   const onWin = ({ winnerId, loserId }) => {
     if (stakeChore) claimChore(stakeChore.id, loserId);

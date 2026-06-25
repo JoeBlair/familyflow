@@ -3,6 +3,7 @@ import {
   Modal, View, Text, TextInput, Pressable, ScrollView, StyleSheet, Alert,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Eyebrow } from './ui';
 import { useApp } from '../context/AppContext';
 import { taskIcon } from '../theme/icons';
@@ -16,6 +17,7 @@ const newId = () => `${Date.now()}_${counter++}`;
 // sync. Local state is the source of truth while open (re-seeded per chore).
 export default function ChoreDetailModal({ chore, visible, onClose }) {
   const { updateChore, deleteChore } = useApp();
+  const navigation = useNavigation();
   const [notes, setNotes] = useState('');
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
@@ -53,6 +55,11 @@ export default function ChoreDetailModal({ chore, visible, onClose }) {
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: () => { onClose(); deleteChore(chore.id); } },
     ]);
+  };
+  const playForIt = () => {
+    saveNotes();
+    onClose();
+    navigation.navigate('Forfeit', { stakeChoreId: chore.id });
   };
 
   return (
@@ -108,6 +115,10 @@ export default function ChoreDetailModal({ chore, visible, onClose }) {
             </Pressable>
           </View>
 
+          <Pressable onPress={playForIt} style={styles.play}>
+            <Text style={styles.playText}>🎮  Nobody wants it? Settle with a game</Text>
+          </Pressable>
+
           <View style={styles.footer}>
             <Pressable onPress={confirmDelete} style={styles.delete}>
               <Text style={styles.deleteText}>Delete</Text>
@@ -142,7 +153,9 @@ const styles = StyleSheet.create({
   addInput: { flex: 1, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line, paddingVertical: 10, fontSize: 15, color: colors.ink },
   addBtn: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.ink, paddingVertical: 9, paddingHorizontal: 16 },
   addBtnText: { fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: colors.ink },
-  footer: { flexDirection: 'row', gap: 12, marginTop: 22 },
+  play: { marginTop: 20, paddingVertical: 13, alignItems: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: colors.gold },
+  playText: { fontSize: 12, fontWeight: '700', letterSpacing: 0.5, color: colors.gold },
+  footer: { flexDirection: 'row', gap: 12, marginTop: 14 },
   delete: { paddingVertical: 14, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: '#9E5B6B' },
   deleteText: { color: '#9E5B6B', fontSize: 11, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase' },
   done: { flex: 1, paddingVertical: 14, alignItems: 'center', backgroundColor: colors.ink },
