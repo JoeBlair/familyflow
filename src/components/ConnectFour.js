@@ -77,7 +77,9 @@ export default function ConnectFour({ memberA, memberB, onWin, disabled }) {
       setWinCells(line);
       setWinner(turn);
       setStatus('won');
-      Haptics.notificationAsync(Haptics.NotificationFeedbackStyle.Success).catch(() => {});
+      // Optional-chain the enum: it can be undefined at runtime, and the throw
+      // happens while evaluating the arg (uncaught) — which crashed on win.
+      Haptics.notificationAsync(Haptics.NotificationFeedbackStyle?.Success ?? 'success').catch(() => {});
       const winId = memberFor(turn).id;
       const loseId = memberFor(turn === 'a' ? 'b' : 'a').id;
       onWin({ winnerId: winId, loserId: loseId });

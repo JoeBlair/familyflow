@@ -75,7 +75,7 @@ export default function BattleArena({ memberA, memberB, onFinish, disabled }) {
     if (phase !== 'fighting') return;
     scoresRef.current = { ...scoresRef.current, [side]: scoresRef.current[side] + 1 };
     setScores({ ...scoresRef.current });
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle?.Light ?? 'light').catch(() => {});
     const scale = side === 'a' ? aScale : bScale;
     Animated.sequence([
       Animated.timing(scale, { toValue: 1.18, duration: 50, useNativeDriver: true }),
