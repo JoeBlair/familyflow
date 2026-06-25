@@ -62,8 +62,8 @@ function Tabs() {
       }}
     >
       <Tab.Screen name="Mine" component={MyTasksScreen} />
-      <Tab.Screen name="Weekly" component={ChoresScreen} options={{ tabBarLabel: 'Tasks' }} />
-      <Tab.Screen name="Calendar" component={CalendarScreen} options={{ tabBarLabel: 'Plan' }} />
+      <Tab.Screen name="Chores" component={ChoresScreen} />
+      <Tab.Screen name="Calendar" component={CalendarScreen} />
       <Tab.Screen name="Charts" component={ChartsScreen} options={{ tabBarLabel: 'Balance' }} />
       <Tab.Screen name="Check-in" component={CheckinScreen} options={{ tabBarLabel: 'Thanks' }} />
     </Tab.Navigator>

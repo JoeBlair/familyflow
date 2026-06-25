@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, Modal } from 'react-native';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
-import AddChoreModal from '../components/AddChoreModal';
 import MemberPickerModal from '../components/MemberPickerModal';
 import { useApp } from '../context/AppContext';
 import { taskIcon } from '../theme/icons';
@@ -16,10 +15,9 @@ const SLOT_SHORT = { morning: 'AM', afternoon: 'PM' };
 const DOTS_SHOWN = 4;
 
 export default function CalendarScreen() {
-  const { chores, members, scheduleChore, claimChore, addChore } = useApp();
+  const { chores, members, scheduleChore, claimChore } = useApp();
   const [target, setTarget] = useState(null); // { day: string|null, slot } -> place-an-existing-task picker
   const [cell, setCell] = useState(null); // { day: string|null, slot } -> grid cell detail sheet
-  const [addOpen, setAddOpen] = useState(false);
   const [assignChore, setAssignChore] = useState(null); // chore being assigned to a member
 
   const memberById = useMemo(() => Object.fromEntries(members.map((m) => [m.id, m])), [members]);
@@ -74,11 +72,7 @@ export default function CalendarScreen() {
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 20, paddingBottom: 48 }} showsVerticalScrollIndicator={false}>
       <Eyebrow>The Week</Eyebrow>
       <Masthead style={{ marginTop: 4 }}>Calendar</Masthead>
-      <Text style={styles.dek}>Tap any cell to see, add, assign or remove its tasks. Dots are coloured by who's assigned.</Text>
-
-      <Pressable style={styles.newBtn} onPress={() => setAddOpen(true)}>
-        <Text style={styles.newBtnText}>+ New task</Text>
-      </Pressable>
+      <Text style={styles.dek}>Schedule chores onto the week — tap a cell to add, assign or remove. Dots are coloured by who's assigned. Create new chores on the Chores tab.</Text>
 
       {/* Every day (daily tasks) — one full-width row per slot, above the day grid */}
       <Rule style={{ marginTop: 22 }} />
@@ -189,16 +183,6 @@ export default function CalendarScreen() {
         onClose={() => setAssignChore(null)}
       />
 
-      {/* Create a brand-new task (daily by default) */}
-      <AddChoreModal
-        visible={addOpen}
-        defaultFrequency="daily"
-        onClose={() => setAddOpen(false)}
-        onAdd={({ title, frequency, domain, calDay, calSlot, notes }) =>
-          addChore({ title, frequency, domain, calDay, calSlot, notes })
-        }
-      />
-
       {/* Place an existing task into the chosen cell */}
       <Modal visible={!!target} transparent animationType="fade" onRequestClose={() => setTarget(null)}>
         <Pressable style={styles.backdrop} onPress={() => setTarget(null)}>
@@ -207,7 +191,7 @@ export default function CalendarScreen() {
               Add to {target?.day ? DAY_LABEL[target.day] : 'every day'} · {target?.slot}
             </Eyebrow>
             <ScrollView style={{ maxHeight: 380, marginTop: 8 }}>
-              {candidates.length === 0 && <Text style={styles.noneText}>No tasks of this type yet — use “New task”.</Text>}
+              {candidates.length === 0 && <Text style={styles.noneText}>No chores of this type yet — add one on the Chores tab.</Text>}
               {candidates.map((c) => {
                 const m = memberById[c.assignee];
                 return (
@@ -231,8 +215,6 @@ const styles = StyleSheet.create({
   emptyWrap: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center', padding: 30 },
   emptyText: { fontSize: 15, color: colors.muted, fontStyle: 'italic', textAlign: 'center' },
   dek: { fontSize: 14, color: colors.charcoal, marginTop: 8, lineHeight: 20 },
-  newBtn: { alignSelf: 'flex-start', marginTop: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.ink, paddingVertical: 9, paddingHorizontal: 16 },
-  newBtnText: { fontSize: 11, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase', color: colors.ink },
   section: { fontFamily: fonts.serif, fontSize: 22, color: colors.ink, marginTop: 14, marginBottom: 8 },
 
   // every-day rows

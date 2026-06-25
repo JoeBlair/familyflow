@@ -10,12 +10,12 @@ import { isChoreDone } from '../utils/periods';
 
 export default function ChoresScreen() {
   const { chores, addChore } = useApp();
-  const [frequency, setFrequency] = useState('weekly');
+  const [frequency, setFrequency] = useState('daily');
   const [domainFilter, setDomainFilter] = useState(null);
   const [modal, setModal] = useState(false);
 
-  // Daily chores live on the Calendar + Charts now; this tab is Weekly + Plans.
-  const FREQS = ['weekly', 'yearly'];
+  // The master list of every chore, by frequency. Calendar handles scheduling.
+  const FREQS = ['daily', 'weekly', 'yearly'];
 
   const visible = useMemo(
     () =>
