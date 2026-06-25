@@ -131,12 +131,16 @@ export default function RootNavigator() {
               }}
             />
           </Stack.Navigator>
-          <Modal visible={introSeen === false} animationType="fade" onRequestClose={dismissIntro}>
-            <IntroScreen onDone={dismissIntro} />
-          </Modal>
-          <Modal visible={needChoreSetup} animationType="slide" onRequestClose={dismissChoreSetup}>
-            <ChoreSetupScreen onDone={dismissChoreSetup} />
-          </Modal>
+          {introSeen === false && (
+            <Modal visible animationType="fade" onRequestClose={dismissIntro}>
+              <IntroScreen onDone={dismissIntro} />
+            </Modal>
+          )}
+          {needChoreSetup && (
+            <Modal visible animationType="slide" onRequestClose={dismissChoreSetup}>
+              <ChoreSetupScreen onDone={dismissChoreSetup} />
+            </Modal>
+          )}
         </>
       )}
     </NavigationContainer>
