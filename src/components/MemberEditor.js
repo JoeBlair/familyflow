@@ -5,6 +5,7 @@ import { MEMBER_COLORS, MEMBER_EMOJIS, ROLES, roleLabels, colors } from '../them
 export default function MemberEditor({
   name, setName, color, setColor, emoji, setEmoji,
   role, setRole, showRole = false,
+  workDays, setWorkDays, showWork = false,
   namePlaceholder = 'Name',
 }) {
   return (
@@ -50,6 +51,20 @@ export default function MemberEditor({
           </Pressable>
         ))}
       </View>
+
+      {showWork && role === 'member' && (
+        <>
+          <Text style={styles.label}>Days out a week</Text>
+          <Text style={styles.hint}>Work, study, or other commitments — so the balance knows you have less time for chores.</Text>
+          <View style={[styles.row, { marginTop: 10 }]}>
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((n) => (
+              <Pressable key={n} onPress={() => setWorkDays(n)} style={[styles.dayNum, workDays === n && styles.dayNumOn]}>
+                <Text style={[styles.dayNumText, workDays === n && styles.dayNumTextOn]}>{n}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </>
+      )}
     </View>
   );
 }
@@ -67,4 +82,9 @@ const styles = StyleSheet.create({
   roleChipActive: { backgroundColor: colors.ink, borderColor: colors.ink },
   roleText: { fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: colors.charcoal },
   roleTextActive: { color: colors.paper },
+  hint: { fontSize: 12, color: colors.muted, fontStyle: 'italic', marginTop: 6, lineHeight: 17 },
+  dayNum: { width: 32, height: 32, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  dayNumOn: { backgroundColor: colors.ink, borderColor: colors.ink },
+  dayNumText: { fontSize: 13, fontWeight: '700', color: colors.charcoal },
+  dayNumTextOn: { color: colors.paper },
 });

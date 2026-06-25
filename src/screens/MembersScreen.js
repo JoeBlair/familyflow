@@ -15,23 +15,27 @@ export default function MembersScreen() {
   const [color, setColor] = useState(MEMBER_COLORS[0]);
   const [emoji, setEmoji] = useState('🙂');
   const [role, setRole] = useState('member');
+  const [workDays, setWorkDays] = useState(5);
 
   const openNew = () => {
     setName('');
     setColor(MEMBER_COLORS[members.length % MEMBER_COLORS.length]);
     setEmoji('🙂');
     setRole('member');
+    setWorkDays(5);
     setEditing('new');
   };
   const openEdit = (m) => {
-    setName(m.name); setColor(m.color); setEmoji(m.emoji); setRole(m.role || 'member'); setEditing(m);
+    setName(m.name); setColor(m.color); setEmoji(m.emoji); setRole(m.role || 'member');
+    setWorkDays(Math.max(0, Math.min(Number(m.workPct) || 0, 7)));
+    setEditing(m);
   };
 
   const save = async () => {
     if (!name.trim()) return;
     try {
-      if (editing === 'new') await addMember({ name: name.trim(), color, emoji, role });
-      else await updateMember(editing.id, { name: name.trim(), color, emoji, role });
+      if (editing === 'new') await addMember({ name: name.trim(), color, emoji, role, workPct: workDays });
+      else await updateMember(editing.id, { name: name.trim(), color, emoji, role, workPct: workDays });
       setEditing(null);
     } catch (e) { Alert.alert('Could not save', e.message); }
   };
@@ -157,7 +161,7 @@ export default function MembersScreen() {
           <View style={styles.sheet}>
             <Eyebrow>{editing === 'new' ? 'New member' : 'Edit member'}</Eyebrow>
             <View style={{ height: 14 }} />
-            <MemberEditor name={name} setName={setName} color={color} setColor={setColor} emoji={emoji} setEmoji={setEmoji} role={role} setRole={setRole} showRole namePlaceholder="Name" />
+            <MemberEditor name={name} setName={setName} color={color} setColor={setColor} emoji={emoji} setEmoji={setEmoji} role={role} setRole={setRole} showRole workDays={workDays} setWorkDays={setWorkDays} showWork namePlaceholder="Name" />
             <View style={styles.sheetBtns}>
               <Pressable style={styles.cancel} onPress={() => setEditing(null)}><Text style={styles.cancelText}>Cancel</Text></Pressable>
               <Pressable style={[styles.saveBtn, !name.trim() && { opacity: 0.4 }]} onPress={save} disabled={!name.trim()}>

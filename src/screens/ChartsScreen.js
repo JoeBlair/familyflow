@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import Slider from '@react-native-community/slider';
 import Doughnut, { DoughnutLegend } from '../components/Doughnut';
 import LoadBar from '../components/LoadBar';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
@@ -11,7 +10,7 @@ const CHORE_LOAD_CAP = 10;
 const FAIR_GAP = 15; // how close two people's load must be to count as "balanced"
 
 export default function ChartsScreen() {
-  const { members, chores, setMemberWork } = useApp();
+  const { members, chores } = useApp();
 
   // Charts is about the adults sharing the load — exclude children and home help.
   const fam = useMemo(() => members.filter((m) => m.role === 'member'), [members]);
@@ -67,7 +66,7 @@ export default function ChartsScreen() {
       {/* HERO: the takeaway first — is it fair? */}
       <Eyebrow>The Balance</Eyebrow>
       <Masthead style={{ marginTop: 4 }}>How It Looks</Masthead>
-      <Text style={styles.dek}>A rough shared picture from chores and paid work — for awareness and a chat, not a precise score.</Text>
+      <Text style={styles.dek}>A rough shared picture of each week — chores against the time someone's already out at work. For awareness and a chat, not a precise score.</Text>
 
       <View style={styles.verdict}>
         <Text style={styles.verdictEmoji}>💛</Text>
@@ -76,9 +75,13 @@ export default function ChartsScreen() {
 
       {fam.map((m) => {
         const { workPct, chorePct, freePct } = loadFor(m);
+        const days = workDaysOf(m);
         return (
           <View key={m.id} style={styles.loadRow}>
-            <Text style={styles.loadName}>{m.name}</Text>
+            <View style={styles.loadHead}>
+              <Text style={styles.loadName}>{m.name}</Text>
+              <Text style={styles.loadMeta}>out {days} {days === 1 ? 'day' : 'days'}/wk</Text>
+            </View>
             <LoadBar
               segments={[
                 { label: 'Chores', value: chorePct, color: m.color },
@@ -89,32 +92,7 @@ export default function ChartsScreen() {
           </View>
         );
       })}
-
-      {/* Paid work — the input that drives the balance above */}
-      <Rule style={{ marginTop: 28, marginBottom: 16 }} />
-      <Eyebrow>Engagements</Eyebrow>
-      <Masthead size={24} style={{ marginTop: 4 }}>Paid Work</Masthead>
-      <Text style={styles.dek}>Set how many days a week each person works for pay — it feeds the balance above.</Text>
-      {fam.map((m) => {
-        const days = workDaysOf(m);
-        return (
-          <View key={m.id} style={styles.workRow}>
-            <Text style={styles.workName} numberOfLines={1}>{m.name}</Text>
-            <Slider
-              style={{ flex: 1, marginHorizontal: 12 }}
-              minimumValue={0}
-              maximumValue={7}
-              step={1}
-              value={days}
-              onSlidingComplete={(v) => setMemberWork(m.id, Math.round(v))}
-              minimumTrackTintColor={m.color}
-              maximumTrackTintColor={colors.line}
-              thumbTintColor={m.color}
-            />
-            <Text style={styles.workPct}>{days} {days === 1 ? 'day' : 'days'}</Text>
-          </View>
-        );
-      })}
+      <Text style={styles.tip}>Set each person's days at work when you add or edit them on the Family tab.</Text>
 
       {/* The detail: who does what, by category */}
       <Rule style={{ marginTop: 28, marginBottom: 16 }} />
@@ -143,10 +121,10 @@ const styles = StyleSheet.create({
   verdictEmoji: { fontSize: 24, marginRight: 12 },
   verdictText: { flex: 1, fontFamily: fonts.serif, fontSize: 17, color: colors.ink, lineHeight: 23 },
   loadRow: { marginTop: 18 },
-  loadName: { fontFamily: fonts.serif, fontSize: 17, color: colors.ink, marginBottom: 10 },
-  workRow: { flexDirection: 'row', alignItems: 'center', marginTop: 16 },
-  workName: { fontFamily: fonts.serif, fontSize: 17, color: colors.ink, width: 90 },
-  workPct: { fontSize: 13, fontWeight: '700', color: colors.ink, width: 58, textAlign: 'right' },
+  loadHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 },
+  loadName: { fontFamily: fonts.serif, fontSize: 17, color: colors.ink },
+  loadMeta: { fontSize: 12, color: colors.muted, letterSpacing: 0.3 },
+  tip: { fontSize: 12, color: colors.muted, fontStyle: 'italic', marginTop: 16, lineHeight: 17 },
   person: { fontFamily: fonts.serif, fontSize: 22, marginTop: 20, marginBottom: 8 },
   doughnutWrap: { alignItems: 'center', marginTop: 8 },
 });

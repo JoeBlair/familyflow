@@ -211,10 +211,10 @@ export async function toggleChoreDone(chore, memberId) {
   if (error) throw error;
 }
 
-export async function addMember(familyId, { name, color, emoji, role }) {
+export async function addMember(familyId, { name, color, emoji, role, workPct }) {
   const { error } = await supabase
     .from('members')
-    .insert({ family_id: familyId, name, color, emoji, role: role ?? 'member' });
+    .insert({ family_id: familyId, name, color, emoji, role: role ?? 'member', work_pct: workPct ?? 5 });
   if (error) throw error;
 }
 
