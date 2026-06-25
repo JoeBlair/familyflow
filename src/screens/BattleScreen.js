@@ -2,11 +2,19 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import ConnectFour from '../components/ConnectFour';
+import BattleArena from '../components/BattleArena';
+import CoinFlip from '../components/CoinFlip';
 import MemberPickerModal from '../components/MemberPickerModal';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
 import { useApp } from '../context/AppContext';
 import { weekKey } from '../utils/periods';
 import { colors, fonts } from '../theme/colors';
+
+const GAMES = [
+  { key: 'c4', label: 'Connect Four' },
+  { key: 'tap', label: 'Tap Race' },
+  { key: 'coin', label: 'Coin Flip' },
+];
 
 export default function BattleScreen() {
   const { chores, members, family, setWeeklyStake, claimChore, addBattle, battles } = useApp();
@@ -26,6 +34,7 @@ export default function BattleScreen() {
   const [fighterA, setFighterA] = useState(null);
   const [fighterB, setFighterB] = useState(null);
   const [picking, setPicking] = useState(null);
+  const [game, setGame] = useState('c4'); // 'c4' | 'tap' | 'coin'
 
   useEffect(() => {
     if (players.length >= 2) {
@@ -109,8 +118,23 @@ export default function BattleScreen() {
 
       <Rule style={{ marginVertical: 18 }} />
 
+      {/* Pick a game */}
+      <View style={styles.gameRow}>
+        {GAMES.map((g) => (
+          <Pressable key={g.key} onPress={() => setGame(g.key)} style={[styles.gameChip, game === g.key && styles.gameChipActive]}>
+            <Text style={[styles.gameText, game === g.key && styles.gameTextActive]}>{g.label}</Text>
+          </Pressable>
+        ))}
+      </View>
+
       {a && b && a.id !== b.id ? (
-        <ConnectFour key={`${a.id}-${b.id}`} memberA={a} memberB={b} onWin={onWin} disabled={!stakeChore} />
+        game === 'c4' ? (
+          <ConnectFour key={`c4-${a.id}-${b.id}`} memberA={a} memberB={b} onWin={onWin} disabled={!stakeChore} />
+        ) : game === 'tap' ? (
+          <BattleArena key={`tap-${a.id}-${b.id}`} memberA={a} memberB={b} onFinish={onWin} disabled={!stakeChore} />
+        ) : (
+          <CoinFlip key={`coin-${a.id}-${b.id}`} memberA={a} memberB={b} onWin={onWin} disabled={!stakeChore} />
+        )
       ) : (
         <Text style={styles.pickHint}>Choose two different players.</Text>
       )}
@@ -193,6 +217,11 @@ const styles = StyleSheet.create({
   fighterText: { fontFamily: fonts.serif, fontSize: 17, color: colors.ink },
   versus: { fontSize: 12, fontStyle: 'italic', color: colors.muted },
   pickHint: { textAlign: 'center', color: colors.muted, marginVertical: 20 },
+  gameRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 18 },
+  gameChip: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, paddingVertical: 7, paddingHorizontal: 12 },
+  gameChipActive: { backgroundColor: colors.ink, borderColor: colors.ink },
+  gameText: { fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', color: colors.charcoal },
+  gameTextActive: { color: colors.paper },
   emptyHist: { fontSize: 14, color: colors.muted, marginTop: 10 },
   histRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14 },
   histTitle: { fontFamily: fonts.serif, fontSize: 18, color: colors.ink },
