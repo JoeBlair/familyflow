@@ -50,12 +50,13 @@ export const domainLabels = {
 };
 
 export const DOMAINS = ['household', 'baby', 'admin', 'social'];
-export const FREQUENCIES = ['daily', 'weekly', 'yearly'];
+export const FREQUENCIES = ['daily', 'weekly', 'monthly', 'yearly'];
 
 export const frequencyLabels = {
   daily: 'Daily',
   weekly: 'Weekly',
-  yearly: 'Plans',
+  monthly: 'Monthly',
+  yearly: 'Yearly',
 };
 
 // Palette options offered when creating/editing a family member — a vibrant,

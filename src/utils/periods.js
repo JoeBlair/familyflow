@@ -23,6 +23,11 @@ export function weekKey(date = new Date()) {
   return `${d.getUTCFullYear()}-W${pad(weekNo)}`;
 }
 
+// Calendar month key: YYYY-MM.
+export function monthKey(date = new Date()) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+}
+
 export function yearKey(date = new Date()) {
   return `${date.getFullYear()}`;
 }
@@ -33,6 +38,8 @@ export function currentPeriodKey(frequency, date = new Date()) {
       return dayKey(date);
     case 'weekly':
       return weekKey(date);
+    case 'monthly':
+      return monthKey(date);
     case 'yearly':
       return yearKey(date);
     default:

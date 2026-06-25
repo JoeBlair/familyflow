@@ -14,8 +14,9 @@ export const SUGGESTED_CHORES = [
   { title: 'Laundry', frequency: 'weekly', domain: 'household', defaultOn: true },
   { title: 'Grocery shop', frequency: 'weekly', domain: 'household', defaultOn: true },
   { title: 'Change bed sheets', frequency: 'weekly', domain: 'household' },
-  // Household — yearly
-  { title: 'Deep clean', frequency: 'yearly', domain: 'household' },
+  // Household — monthly / yearly
+  { title: 'Deep clean', frequency: 'monthly', domain: 'household' },
+  { title: 'Clean the oven', frequency: 'monthly', domain: 'household' },
   { title: 'Service boiler', frequency: 'yearly', domain: 'household' },
 
   // Baby — daily
@@ -32,7 +33,8 @@ export const SUGGESTED_CHORES = [
   // Admin — weekly / yearly
   { title: 'Check bank account', frequency: 'weekly', domain: 'admin', defaultOn: true },
   { title: 'Reply to messages', frequency: 'weekly', domain: 'admin' },
-  { title: 'Pay bills', frequency: 'weekly', domain: 'admin' },
+  { title: 'Pay bills', frequency: 'monthly', domain: 'admin', defaultOn: true },
+  { title: 'Budget review', frequency: 'monthly', domain: 'admin' },
   { title: 'Tax return', frequency: 'yearly', domain: 'admin' },
   { title: 'Insurance renewal', frequency: 'yearly', domain: 'admin' },
   { title: 'Renew documents', frequency: 'yearly', domain: 'admin' },

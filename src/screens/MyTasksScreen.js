@@ -9,7 +9,8 @@ import { colors, fonts } from '../theme/colors';
 const GROUPS = [
   { key: 'daily', label: 'Today' },
   { key: 'weekly', label: 'This week' },
-  { key: 'yearly', label: 'Plans' },
+  { key: 'monthly', label: 'This month' },
+  { key: 'yearly', label: 'This year' },
 ];
 
 export default function MyTasksScreen() {
