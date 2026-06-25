@@ -7,6 +7,7 @@ import { isChoreDone } from '../utils/periods';
 import { colors, fonts } from '../theme/colors';
 
 const GROUPS = [
+  { key: 'once', label: 'To-do' },
   { key: 'daily', label: 'Today' },
   { key: 'weekly', label: 'This week' },
   { key: 'monthly', label: 'This month' },

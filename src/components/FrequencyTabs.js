@@ -25,9 +25,9 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
   tab: { flex: 1, alignItems: 'center', paddingTop: 4 },
   text: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
-    letterSpacing: 1.5,
+    letterSpacing: 0.5,
     textTransform: 'uppercase',
     color: colors.muted,
     paddingBottom: 10,

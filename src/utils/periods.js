@@ -34,6 +34,8 @@ export function yearKey(date = new Date()) {
 
 export function currentPeriodKey(frequency, date = new Date()) {
   switch (frequency) {
+    case 'once':
+      return 'once'; // constant — a one-off, once done, stays done forever
     case 'daily':
       return dayKey(date);
     case 'weekly':
