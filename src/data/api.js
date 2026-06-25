@@ -13,6 +13,8 @@ const rowToChore = (r) => ({
   completedBy: r.completed_by,
   calDay: r.cal_day ?? null,
   calSlot: r.cal_slot ?? null,
+  notes: r.notes ?? '',
+  items: Array.isArray(r.items) ? r.items : [],
 });
 
 const rowToRating = (r) => ({
@@ -157,11 +159,22 @@ export async function fetchBattles(familyId) {
 }
 
 // ──────────────────────────── mutations ────────────────────────────────
-export async function addChore(familyId, { title, frequency, domain, calDay, calSlot }) {
+export async function addChore(familyId, { title, frequency, domain, calDay, calSlot, notes }) {
   const row = { family_id: familyId, title, frequency, domain, is_custom: true };
   if (calSlot) row.cal_slot = calSlot;
   if (calDay) row.cal_day = calDay;
+  if (notes) row.notes = notes;
   const { error } = await supabase.from('chores').insert(row);
+  if (error) throw error;
+}
+
+// Edit a chore's free-form fields (notes / checklist items / title).
+export async function updateChore(id, patch) {
+  const row = {};
+  if (patch.title !== undefined) row.title = patch.title;
+  if (patch.notes !== undefined) row.notes = patch.notes;
+  if (patch.items !== undefined) row.items = patch.items;
+  const { error } = await supabase.from('chores').update(row).eq('id', id);
   if (error) throw error;
 }
 

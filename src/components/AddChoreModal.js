@@ -21,12 +21,13 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
   const [domain, setDomain] = useState('household');
   const [calSlot, setCalSlot] = useState(null); // null | 'morning' | 'afternoon'
   const [calDay, setCalDay] = useState(null);
+  const [notes, setNotes] = useState('');
 
   React.useEffect(() => {
     if (visible) setFrequency(defaultFrequency && frequencies.includes(defaultFrequency) ? defaultFrequency : frequencies[0]);
   }, [visible, defaultFrequency]);
 
-  const reset = () => { setTitle(''); setDomain('household'); setCalSlot(null); setCalDay(null); };
+  const reset = () => { setTitle(''); setDomain('household'); setCalSlot(null); setCalDay(null); setNotes(''); };
 
   const submit = () => {
     const t = title.trim();
@@ -35,7 +36,7 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
     const calendar = frequency === 'daily'
       ? { calSlot, calDay: null }
       : { calSlot, calDay: calSlot ? calDay : null };
-    onAdd({ title: t, frequency, domain, ...calendar });
+    onAdd({ title: t, frequency, domain, notes: notes.trim() || undefined, ...calendar });
     reset();
     onClose();
   };
@@ -109,6 +110,16 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
             <Text style={styles.hint}>Daily — shows every {calSlot} on the calendar.</Text>
           )}
 
+          <Text style={styles.label}>Notes (optional)</Text>
+          <TextInput
+            value={notes}
+            onChangeText={setNotes}
+            placeholder="Anything to remember…"
+            placeholderTextColor={colors.muted}
+            style={styles.notes}
+            multiline
+          />
+
           <Pressable onPress={submit} style={[styles.addBtn, !title.trim() && { opacity: 0.4 }]} disabled={!title.trim()}>
             <Text style={styles.addBtnText}>Add chore</Text>
           </Pressable>
@@ -123,6 +134,7 @@ const styles = StyleSheet.create({
   backdropTap: { ...StyleSheet.absoluteFillObject },
   sheet: { backgroundColor: colors.bg, padding: 22, paddingBottom: 38 },
   input: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line, paddingVertical: 14, fontSize: 18, color: colors.ink, marginTop: 14, marginBottom: 8 },
+  notes: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, backgroundColor: colors.paper, padding: 12, minHeight: 56, fontSize: 15, color: colors.ink, textAlignVertical: 'top' },
   label: { fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase', color: colors.muted, marginTop: 18, marginBottom: 10 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingVertical: 8, paddingHorizontal: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },

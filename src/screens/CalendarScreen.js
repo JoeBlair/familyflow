@@ -194,8 +194,8 @@ export default function CalendarScreen() {
         visible={addOpen}
         defaultFrequency="daily"
         onClose={() => setAddOpen(false)}
-        onAdd={({ title, frequency, domain, calDay, calSlot }) =>
-          addChore({ title, frequency, domain, calDay, calSlot })
+        onAdd={({ title, frequency, domain, calDay, calSlot, notes }) =>
+          addChore({ title, frequency, domain, calDay, calSlot, notes })
         }
       />
 

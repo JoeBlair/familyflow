@@ -27,8 +27,8 @@ export default function ChoresScreen() {
 
   const doneCount = visible.filter((c) => isChoreDone(c)).length;
 
-  const onAdd = ({ title, frequency: f, domain, calDay, calSlot }) =>
-    addChore({ title, frequency: f, domain, calDay, calSlot });
+  const onAdd = ({ title, frequency: f, domain, calDay, calSlot, notes }) =>
+    addChore({ title, frequency: f, domain, calDay, calSlot, notes });
 
   return (
     <View style={styles.container}>

@@ -1,28 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import DomainBadge from './DomainBadge';
 import ClaimChip from './ClaimChip';
 import MemberPickerModal from './MemberPickerModal';
+import ChoreDetailModal from './ChoreDetailModal';
 import { colors, fonts } from '../theme/colors';
 import { taskIcon } from '../theme/icons';
 import { isChoreDone } from '../utils/periods';
 import { useApp } from '../context/AppContext';
 
 export default function ChoreItem({ chore }) {
-  const { members, toggleDone, claimChore, deleteChore } = useApp();
+  const { members, toggleDone, claimChore } = useApp();
   const [picker, setPicker] = useState(false);
+  const [detail, setDetail] = useState(false);
   const done = isChoreDone(chore);
   const assignedMember = members.find((m) => m.id === chore.assignee) || null;
 
-  const onLongPress = () => {
-    Alert.alert('Delete chore', `Remove "${chore.title}"?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => deleteChore(chore.id) },
-    ]);
-  };
+  const items = Array.isArray(chore.items) ? chore.items : [];
+  const itemsDone = items.filter((it) => it.done).length;
 
   return (
-    <Pressable onLongPress={onLongPress} delayLongPress={350} style={styles.row}>
+    <View style={styles.row}>
       <Pressable
         onPress={() => toggleDone(chore)}
         hitSlop={10}
@@ -31,16 +29,20 @@ export default function ChoreItem({ chore }) {
         {done && <Text style={styles.checkMark}>✓</Text>}
       </Pressable>
 
-      <Text style={styles.icon}>{taskIcon(chore.title, chore.domain)}</Text>
-
-      <View style={styles.middle}>
-        <Text style={[styles.title, done && styles.titleDone]} numberOfLines={2}>
-          {chore.title}
-        </Text>
-        <View style={styles.meta}>
-          <DomainBadge domain={chore.domain} />
+      {/* Tap the body to open notes / checklist / delete */}
+      <Pressable style={styles.body} onPress={() => setDetail(true)}>
+        <Text style={styles.icon}>{taskIcon(chore.title, chore.domain)}</Text>
+        <View style={styles.middle}>
+          <Text style={[styles.title, done && styles.titleDone]} numberOfLines={2}>
+            {chore.title}
+          </Text>
+          <View style={styles.meta}>
+            <DomainBadge domain={chore.domain} />
+            {!!chore.notes && <Text style={styles.metaTag}>📝</Text>}
+            {items.length > 0 && <Text style={styles.metaTag}>☑ {itemsDone}/{items.length}</Text>}
+          </View>
         </View>
-      </View>
+      </Pressable>
 
       <ClaimChip member={assignedMember} onPress={() => setPicker(true)} />
 
@@ -52,7 +54,9 @@ export default function ChoreItem({ chore }) {
         onSelect={(memberId) => claimChore(chore.id, memberId)}
         onClose={() => setPicker(false)}
       />
-    </Pressable>
+
+      <ChoreDetailModal chore={chore} visible={detail} onClose={() => setDetail(false)} />
+    </View>
   );
 }
 
@@ -76,9 +80,11 @@ const styles = StyleSheet.create({
   },
   checkDone: { backgroundColor: colors.ink, borderColor: colors.ink },
   checkMark: { color: colors.paper, fontSize: 13, fontWeight: '700' },
+  body: { flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 12 },
   icon: { fontSize: 20, marginRight: 12 },
-  middle: { flex: 1, marginRight: 12 },
+  middle: { flex: 1 },
   title: { fontFamily: fonts.serif, fontSize: 19, color: colors.ink, marginBottom: 7 },
   titleDone: { color: colors.muted, textDecorationLine: 'line-through' },
-  meta: { flexDirection: 'row' },
+  meta: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  metaTag: { fontSize: 11, color: colors.muted, fontWeight: '600' },
 });

@@ -212,6 +212,12 @@ export function AppProvider({ children }) {
           await refreshChores(fid);
         } catch (e) { reportError("Couldn't claim chore", e); }
       },
+      updateChore: async (id, patch) => {
+        try {
+          await api.updateChore(id, patch);
+          await refreshChores(fid);
+        } catch (e) { reportError("Couldn't update chore", e); }
+      },
       scheduleChore: async (id, calDay, calSlot) => {
         try {
           await api.setChoreSchedule(id, { calDay, calSlot });
