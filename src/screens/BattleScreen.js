@@ -4,6 +4,7 @@ import { useRoute } from '@react-navigation/native';
 import ConnectFour from '../components/ConnectFour';
 import BattleArena from '../components/BattleArena';
 import CoinFlip from '../components/CoinFlip';
+import MineSweeper from '../components/MineSweeper';
 import MemberPickerModal from '../components/MemberPickerModal';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
 import { useApp } from '../context/AppContext';
@@ -14,6 +15,7 @@ const GAMES = [
   { key: 'c4', label: 'Connect Four' },
   { key: 'tap', label: 'Tap Race' },
   { key: 'coin', label: 'Coin Flip' },
+  { key: 'mine', label: 'Minesweeper' },
 ];
 
 export default function BattleScreen() {
@@ -132,6 +134,8 @@ export default function BattleScreen() {
           <ConnectFour key={`c4-${a.id}-${b.id}`} memberA={a} memberB={b} onWin={onWin} disabled={!stakeChore} />
         ) : game === 'tap' ? (
           <BattleArena key={`tap-${a.id}-${b.id}`} memberA={a} memberB={b} onFinish={onWin} disabled={!stakeChore} />
+        ) : game === 'mine' ? (
+          <MineSweeper key={`mine-${a.id}-${b.id}`} memberA={a} memberB={b} onWin={onWin} disabled={!stakeChore} />
         ) : (
           <CoinFlip key={`coin-${a.id}-${b.id}`} memberA={a} memberB={b} onWin={onWin} disabled={!stakeChore} />
         )
@@ -217,7 +221,7 @@ const styles = StyleSheet.create({
   fighterText: { fontFamily: fonts.serif, fontSize: 17, color: colors.ink },
   versus: { fontSize: 12, fontStyle: 'italic', color: colors.muted },
   pickHint: { textAlign: 'center', color: colors.muted, marginVertical: 20 },
-  gameRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 18 },
+  gameRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginBottom: 18 },
   gameChip: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, paddingVertical: 7, paddingHorizontal: 12 },
   gameChipActive: { backgroundColor: colors.ink, borderColor: colors.ink },
   gameText: { fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', color: colors.charcoal },
