@@ -4,7 +4,7 @@ import DomainBadge from './DomainBadge';
 import ClaimChip from './ClaimChip';
 import MemberPickerModal from './MemberPickerModal';
 import ChoreDetailModal from './ChoreDetailModal';
-import { colors, fonts } from '../theme/colors';
+import { colors, fonts, cadenceLabel } from '../theme/colors';
 import { taskIcon } from '../theme/icons';
 import { isChoreDone } from '../utils/periods';
 import { useApp } from '../context/AppContext';
@@ -38,6 +38,7 @@ export default function ChoreItem({ chore }) {
           </Text>
           <View style={styles.meta}>
             <DomainBadge domain={chore.domain} />
+            {chore.frequency === 'custom' && <Text style={styles.metaTag}>{cadenceLabel(chore)}</Text>}
             {!!chore.notes && <Text style={styles.metaTag}>📝</Text>}
             {items.length > 0 && <Text style={styles.metaTag}>☑ {itemsDone}/{items.length}</Text>}
           </View>

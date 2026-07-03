@@ -1,5 +1,5 @@
 import { supabase } from '../supabase/client';
-import { currentPeriodKey } from '../utils/periods';
+import { currentPeriodKey, isChoreDone } from '../utils/periods';
 
 // ───────────────────────── row <-> app mappers ─────────────────────────
 const rowToChore = (r) => ({
@@ -15,6 +15,7 @@ const rowToChore = (r) => ({
   calSlot: r.cal_slot ?? null,
   notes: r.notes ?? '',
   items: Array.isArray(r.items) ? r.items : [],
+  intervalDays: r.interval_days ?? null,
 });
 
 const rowToRating = (r) => ({
@@ -159,11 +160,12 @@ export async function fetchBattles(familyId) {
 }
 
 // ──────────────────────────── mutations ────────────────────────────────
-export async function addChore(familyId, { title, frequency, domain, calDay, calSlot, notes }) {
+export async function addChore(familyId, { title, frequency, domain, calDay, calSlot, notes, intervalDays }) {
   const row = { family_id: familyId, title, frequency, domain, is_custom: true };
   if (calSlot) row.cal_slot = calSlot;
   if (calDay) row.cal_day = calDay;
   if (notes) row.notes = notes;
+  if (frequency === 'custom') row.interval_days = intervalDays || 1;
   const { error } = await supabase.from('chores').insert(row);
   if (error) throw error;
 }
@@ -215,11 +217,9 @@ export async function setChoreAssignee(id, memberId) {
 
 // chore: full app-shaped object; memberId: who is toggling
 export async function toggleChoreDone(chore, memberId) {
-  const period = currentPeriodKey(chore.frequency);
-  const isDone = chore.lastCompletedPeriod === period;
-  const patch = isDone
+  const patch = isChoreDone(chore)
     ? { last_completed_period: null, completed_by: null }
-    : { last_completed_period: period, completed_by: memberId };
+    : { last_completed_period: currentPeriodKey(chore.frequency), completed_by: memberId };
   const { error } = await supabase.from('chores').update(patch).eq('id', chore.id);
   if (error) throw error;
 }

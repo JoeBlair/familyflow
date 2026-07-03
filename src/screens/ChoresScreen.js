@@ -15,7 +15,7 @@ export default function ChoresScreen() {
   const [modal, setModal] = useState(false);
 
   // The master list of every chore, by frequency. Calendar handles scheduling.
-  const FREQS = ['daily', 'weekly', 'monthly', 'yearly', 'once'];
+  const FREQS = ['daily', 'weekly', 'monthly', 'yearly', 'once', 'custom'];
 
   const visible = useMemo(
     () =>
@@ -27,8 +27,8 @@ export default function ChoresScreen() {
 
   const doneCount = visible.filter((c) => isChoreDone(c)).length;
 
-  const onAdd = ({ title, frequency: f, domain, calDay, calSlot, notes }) =>
-    addChore({ title, frequency: f, domain, calDay, calSlot, notes });
+  const onAdd = ({ title, frequency: f, domain, calDay, calSlot, notes, intervalDays }) =>
+    addChore({ title, frequency: f, domain, calDay, calSlot, notes, intervalDays });
 
   return (
     <View style={styles.container}>

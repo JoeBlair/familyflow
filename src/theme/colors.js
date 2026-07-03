@@ -50,7 +50,7 @@ export const domainLabels = {
 };
 
 export const DOMAINS = ['household', 'baby', 'admin', 'social'];
-export const FREQUENCIES = ['daily', 'weekly', 'monthly', 'yearly', 'once'];
+export const FREQUENCIES = ['daily', 'weekly', 'monthly', 'yearly', 'once', 'custom'];
 
 export const frequencyLabels = {
   daily: 'Daily',
@@ -58,7 +58,17 @@ export const frequencyLabels = {
   monthly: 'Monthly',
   yearly: 'Yearly',
   once: 'One-off',
+  custom: 'Custom',
 };
+
+// Human label for a chore's cadence — "Every 3 days" for custom, else the label.
+export function cadenceLabel(chore) {
+  if (chore.frequency === 'custom') {
+    const n = chore.intervalDays || 1;
+    return n === 1 ? 'Every day' : `Every ${n} days`;
+  }
+  return frequencyLabels[chore.frequency] || '';
+}
 
 // Palette options offered when creating/editing a family member — a vibrant,
 // harmonious spread so every household has a joyful, distinct cast.

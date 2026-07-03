@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { Eyebrow } from './ui';
-import { DOMAINS, FREQUENCIES, domainLabels, domainColors, frequencyLabels, colors } from '../theme/colors';
+import { DOMAINS, FREQUENCIES, domainLabels, domainColors, frequencyLabels, colors, fonts } from '../theme/colors';
 
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const DAY_LABEL = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' };
@@ -22,12 +22,13 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
   const [calSlot, setCalSlot] = useState(null); // null | 'morning' | 'afternoon'
   const [calDay, setCalDay] = useState(null);
   const [notes, setNotes] = useState('');
+  const [intervalDays, setIntervalDays] = useState(3);
 
   React.useEffect(() => {
     if (visible) setFrequency(defaultFrequency && frequencies.includes(defaultFrequency) ? defaultFrequency : frequencies[0]);
   }, [visible, defaultFrequency]);
 
-  const reset = () => { setTitle(''); setDomain('household'); setCalSlot(null); setCalDay(null); setNotes(''); };
+  const reset = () => { setTitle(''); setDomain('household'); setCalSlot(null); setCalDay(null); setNotes(''); setIntervalDays(3); };
 
   const submit = () => {
     const t = title.trim();
@@ -36,7 +37,12 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
     const calendar = frequency === 'daily'
       ? { calSlot, calDay: null }
       : { calSlot, calDay: calSlot ? calDay : null };
-    onAdd({ title: t, frequency, domain, notes: notes.trim() || undefined, ...calendar });
+    onAdd({
+      title: t, frequency, domain,
+      notes: notes.trim() || undefined,
+      intervalDays: frequency === 'custom' ? intervalDays : undefined,
+      ...calendar,
+    });
     reset();
     onClose();
   };
@@ -67,6 +73,20 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
               </Pressable>
             ))}
           </View>
+
+          {frequency === 'custom' && (
+            <View style={styles.stepRow}>
+              <Text style={styles.stepLabel}>Every</Text>
+              <Pressable onPress={() => setIntervalDays(Math.max(1, intervalDays - 1))} style={styles.stepBtn}>
+                <Text style={styles.stepBtnText}>−</Text>
+              </Pressable>
+              <Text style={styles.stepNum}>{intervalDays}</Text>
+              <Pressable onPress={() => setIntervalDays(intervalDays + 1)} style={styles.stepBtn}>
+                <Text style={styles.stepBtnText}>+</Text>
+              </Pressable>
+              <Text style={styles.stepLabel}>{intervalDays === 1 ? 'day' : 'days'}</Text>
+            </View>
+          )}
 
           <Text style={styles.label}>Category</Text>
           <View style={styles.chipRow}>
@@ -137,6 +157,11 @@ const styles = StyleSheet.create({
   notes: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, backgroundColor: colors.paper, padding: 12, minHeight: 56, fontSize: 15, color: colors.ink, textAlignVertical: 'top' },
   label: { fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase', color: colors.muted, marginTop: 18, marginBottom: 10 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  stepRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 },
+  stepLabel: { fontSize: 14, color: colors.charcoal },
+  stepBtn: { width: 34, height: 34, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center' },
+  stepBtnText: { fontSize: 20, color: colors.ink, marginTop: -2 },
+  stepNum: { fontFamily: fonts.serif, fontSize: 22, color: colors.ink, minWidth: 26, textAlign: 'center' },
   chip: { paddingVertical: 8, paddingHorizontal: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
   dayChip: { paddingVertical: 7, paddingHorizontal: 11, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
   hint: { fontSize: 12, color: colors.muted, fontStyle: 'italic', marginTop: 8 },

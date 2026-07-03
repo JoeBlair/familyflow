@@ -1,11 +1,16 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { FREQUENCIES, frequencyLabels, colors } from '../theme/colors';
 
-// Editorial underline tabs.
+// Editorial underline tabs. Horizontally scrollable so any number of
+// frequencies fit without cramping.
 export default function FrequencyTabs({ value, onChange, frequencies = FREQUENCIES }) {
   return (
-    <View style={styles.row}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.row}
+    >
       {frequencies.map((f) => {
         const active = f === value;
         return (
@@ -17,13 +22,13 @@ export default function FrequencyTabs({ value, onChange, frequencies = FREQUENCI
           </Pressable>
         );
       })}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
-  tab: { flex: 1, alignItems: 'center', paddingTop: 4 },
+  row: { flexGrow: 1, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
+  tab: { alignItems: 'center', paddingTop: 4, paddingHorizontal: 16 },
   text: {
     fontSize: 11,
     fontWeight: '700',
@@ -33,6 +38,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   textActive: { color: colors.ink },
-  underline: { height: 2, width: '60%', backgroundColor: 'transparent' },
+  underline: { height: 2, width: '70%', backgroundColor: 'transparent' },
   underlineActive: { backgroundColor: colors.gold },
 });

@@ -12,6 +12,7 @@ const GROUPS = [
   { key: 'weekly', label: 'This week' },
   { key: 'monthly', label: 'This month' },
   { key: 'yearly', label: 'This year' },
+  { key: 'custom', label: 'Every so often' },
 ];
 
 export default function MyTasksScreen() {

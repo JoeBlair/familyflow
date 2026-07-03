@@ -44,12 +44,26 @@ export function currentPeriodKey(frequency, date = new Date()) {
       return monthKey(date);
     case 'yearly':
       return yearKey(date);
+    // 'custom' (every N days) also stamps the completion day; the interval
+    // check lives in isChoreDone, not here.
     default:
       return dayKey(date);
   }
 }
 
+// Whole days between a stored YYYY-MM-DD day key and now (local midnights).
+function daysSince(key, date) {
+  const [y, m, d] = key.split('-').map(Number);
+  const then = new Date(y, m - 1, d);
+  const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  return Math.round((today - then) / 86400000);
+}
+
 export function isChoreDone(chore, date = new Date()) {
   if (!chore.lastCompletedPeriod) return false;
+  // Custom = "every N days": done until N days have passed since it was last done.
+  if (chore.frequency === 'custom') {
+    return daysSince(chore.lastCompletedPeriod, date) < (chore.intervalDays || 1);
+  }
   return chore.lastCompletedPeriod === currentPeriodKey(chore.frequency, date);
 }
