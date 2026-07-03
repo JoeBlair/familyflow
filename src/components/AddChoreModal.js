@@ -14,6 +14,8 @@ import { DOMAINS, FREQUENCIES, domainLabels, domainColors, frequencyLabels, colo
 
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const DAY_LABEL = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' };
+const UNITS = [['day', 'Days'], ['week', 'Weeks'], ['month', 'Months']];
+const WEEKDAYS = [['mon', 'M'], ['tue', 'T'], ['wed', 'W'], ['thu', 'T'], ['fri', 'F'], ['sat', 'S'], ['sun', 'S']];
 
 export default function AddChoreModal({ visible, defaultFrequency, frequencies = FREQUENCIES, onClose, onAdd }) {
   const [title, setTitle] = useState('');
@@ -22,13 +24,20 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
   const [calSlot, setCalSlot] = useState(null); // null | 'morning' | 'afternoon'
   const [calDay, setCalDay] = useState(null);
   const [notes, setNotes] = useState('');
-  const [intervalDays, setIntervalDays] = useState(3);
+  const [every, setEvery] = useState(3);
+  const [unit, setUnit] = useState('day'); // day | week | month
+  const [weekdays, setWeekdays] = useState([]);
 
   React.useEffect(() => {
     if (visible) setFrequency(defaultFrequency && frequencies.includes(defaultFrequency) ? defaultFrequency : frequencies[0]);
   }, [visible, defaultFrequency]);
 
-  const reset = () => { setTitle(''); setDomain('household'); setCalSlot(null); setCalDay(null); setNotes(''); setIntervalDays(3); };
+  const reset = () => {
+    setTitle(''); setDomain('household'); setCalSlot(null); setCalDay(null); setNotes('');
+    setEvery(3); setUnit('day'); setWeekdays([]);
+  };
+
+  const toggleWeekday = (d) => setWeekdays((w) => (w.includes(d) ? w.filter((x) => x !== d) : [...w, d]));
 
   const submit = () => {
     const t = title.trim();
@@ -37,10 +46,13 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
     const calendar = frequency === 'daily'
       ? { calSlot, calDay: null }
       : { calSlot, calDay: calSlot ? calDay : null };
+    const recurrence = frequency === 'custom'
+      ? (unit === 'week' && weekdays.length ? { weekdays } : { every, unit })
+      : undefined;
     onAdd({
       title: t, frequency, domain,
       notes: notes.trim() || undefined,
-      intervalDays: frequency === 'custom' ? intervalDays : undefined,
+      recurrence,
       ...calendar,
     });
     reset();
@@ -75,17 +87,42 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
           </View>
 
           {frequency === 'custom' && (
-            <View style={styles.stepRow}>
-              <Text style={styles.stepLabel}>Every</Text>
-              <Pressable onPress={() => setIntervalDays(Math.max(1, intervalDays - 1))} style={styles.stepBtn}>
-                <Text style={styles.stepBtnText}>−</Text>
-              </Pressable>
-              <Text style={styles.stepNum}>{intervalDays}</Text>
-              <Pressable onPress={() => setIntervalDays(intervalDays + 1)} style={styles.stepBtn}>
-                <Text style={styles.stepBtnText}>+</Text>
-              </Pressable>
-              <Text style={styles.stepLabel}>{intervalDays === 1 ? 'day' : 'days'}</Text>
-            </View>
+            <>
+              <View style={styles.stepRow}>
+                <Text style={styles.stepLabel}>Every</Text>
+                <Pressable onPress={() => setEvery(Math.max(1, every - 1))} style={styles.stepBtn}>
+                  <Text style={styles.stepBtnText}>−</Text>
+                </Pressable>
+                <Text style={styles.stepNum}>{every}</Text>
+                <Pressable onPress={() => setEvery(every + 1)} style={styles.stepBtn}>
+                  <Text style={styles.stepBtnText}>+</Text>
+                </Pressable>
+                <View style={styles.unitRow}>
+                  {UNITS.map(([u, lbl]) => (
+                    <Pressable key={u} onPress={() => setUnit(u)} style={[styles.chip, unit === u && styles.chipInk]}>
+                      <Text style={[styles.chipText, unit === u && styles.chipTextActive]}>{lbl}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+
+              {unit === 'week' && (
+                <>
+                  <Text style={styles.label}>On days (optional)</Text>
+                  <View style={styles.chipRow}>
+                    {WEEKDAYS.map(([d, lbl]) => {
+                      const on = weekdays.includes(d);
+                      return (
+                        <Pressable key={d} onPress={() => toggleWeekday(d)} style={[styles.dayChip, on && styles.chipInk]}>
+                          <Text style={[styles.chipText, on && styles.chipTextActive]}>{lbl}</Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                  {weekdays.length > 0 && <Text style={styles.hint}>Repeats weekly on the selected days.</Text>}
+                </>
+              )}
+            </>
           )}
 
           <Text style={styles.label}>Category</Text>
@@ -157,7 +194,8 @@ const styles = StyleSheet.create({
   notes: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, backgroundColor: colors.paper, padding: 12, minHeight: 56, fontSize: 15, color: colors.ink, textAlignVertical: 'top' },
   label: { fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase', color: colors.muted, marginTop: 18, marginBottom: 10 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  stepRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12 },
+  stepRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 12, flexWrap: 'wrap' },
+  unitRow: { flexDirection: 'row', gap: 6, marginLeft: 4 },
   stepLabel: { fontSize: 14, color: colors.charcoal },
   stepBtn: { width: 34, height: 34, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center' },
   stepBtnText: { fontSize: 20, color: colors.ink, marginTop: -2 },

@@ -61,11 +61,21 @@ export const frequencyLabels = {
   custom: 'Custom',
 };
 
-// Human label for a chore's cadence — "Every 3 days" for custom, else the label.
+const WD_SHORT = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' };
+const WD_ORDER = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+// Human label for a chore's cadence — "Every 2 weeks" / "Mon · Wed · Fri".
 export function cadenceLabel(chore) {
   if (chore.frequency === 'custom') {
-    const n = chore.intervalDays || 1;
-    return n === 1 ? 'Every day' : `Every ${n} days`;
+    const rec = chore.recurrence || {};
+    if (rec.weekdays && rec.weekdays.length) {
+      return [...rec.weekdays].sort((a, b) => WD_ORDER.indexOf(a) - WD_ORDER.indexOf(b))
+        .map((d) => WD_SHORT[d]).join(' · ');
+    }
+    const n = rec.every || 1;
+    const unit = rec.unit || 'day';
+    if (n === 1) return { day: 'Every day', week: 'Every week', month: 'Every month' }[unit];
+    return `Every ${n} ${unit}s`;
   }
   return frequencyLabels[chore.frequency] || '';
 }

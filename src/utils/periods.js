@@ -51,19 +51,40 @@ export function currentPeriodKey(frequency, date = new Date()) {
   }
 }
 
-// Whole days between a stored YYYY-MM-DD day key and now (local midnights).
-function daysSince(key, date) {
+// getDay(): 0=Sun … 6=Sat
+const WEEKDAY_OF = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+function parseDayKey(key) {
   const [y, m, d] = key.split('-').map(Number);
-  const then = new Date(y, m - 1, d);
-  const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  return Math.round((today - then) / 86400000);
+  return new Date(y, m - 1, d);
+}
+const atMidnight = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+// Next due date given a last-done date and an interval.
+function nextDue(from, every, unit) {
+  const d = new Date(from);
+  if (unit === 'week') d.setDate(d.getDate() + every * 7);
+  else if (unit === 'month') d.setMonth(d.getMonth() + every);
+  else d.setDate(d.getDate() + every); // 'day'
+  return d;
+}
+
+// Custom recurrence: either { weekdays: [...] } or { every, unit }.
+function customDone(chore, date) {
+  const rec = chore.recurrence || {};
+  if (rec.weekdays && rec.weekdays.length) {
+    // Weekday mode: due only on the chosen weekdays.
+    if (!rec.weekdays.includes(WEEKDAY_OF[date.getDay()])) return true; // not due today
+    return chore.lastCompletedPeriod === dayKey(date); // due today → done iff done today
+  }
+  // Interval mode: satisfied until the next due date arrives.
+  if (!chore.lastCompletedPeriod) return false;
+  const due = nextDue(parseDayKey(chore.lastCompletedPeriod), rec.every || 1, rec.unit || 'day');
+  return atMidnight(date) < atMidnight(due);
 }
 
 export function isChoreDone(chore, date = new Date()) {
+  if (chore.frequency === 'custom') return customDone(chore, date);
   if (!chore.lastCompletedPeriod) return false;
-  // Custom = "every N days": done until N days have passed since it was last done.
-  if (chore.frequency === 'custom') {
-    return daysSince(chore.lastCompletedPeriod, date) < (chore.intervalDays || 1);
-  }
   return chore.lastCompletedPeriod === currentPeriodKey(chore.frequency, date);
 }

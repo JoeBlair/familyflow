@@ -15,7 +15,7 @@ const rowToChore = (r) => ({
   calSlot: r.cal_slot ?? null,
   notes: r.notes ?? '',
   items: Array.isArray(r.items) ? r.items : [],
-  intervalDays: r.interval_days ?? null,
+  recurrence: r.recurrence ?? null,
 });
 
 const rowToRating = (r) => ({
@@ -160,12 +160,12 @@ export async function fetchBattles(familyId) {
 }
 
 // ──────────────────────────── mutations ────────────────────────────────
-export async function addChore(familyId, { title, frequency, domain, calDay, calSlot, notes, intervalDays }) {
+export async function addChore(familyId, { title, frequency, domain, calDay, calSlot, notes, recurrence }) {
   const row = { family_id: familyId, title, frequency, domain, is_custom: true };
   if (calSlot) row.cal_slot = calSlot;
   if (calDay) row.cal_day = calDay;
   if (notes) row.notes = notes;
-  if (frequency === 'custom') row.interval_days = intervalDays || 1;
+  if (frequency === 'custom' && recurrence) row.recurrence = recurrence;
   const { error } = await supabase.from('chores').insert(row);
   if (error) throw error;
 }
