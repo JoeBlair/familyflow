@@ -73,8 +73,16 @@ export const MEMBER_COLORS = [
   colors.ink, // ink
 ];
 
+// A range of skin tones so every family can see themselves.
 export const MEMBER_EMOJIS = [
-  '👩', '👨', '🧑', '👧', '👦', '👶', '🧓', '👵', '👴', '🐱', '🐶', '⭐️',
+  '👩', '👩🏽', '👩🏾', '👩🏿',
+  '👨', '👨🏽', '👨🏾', '👨🏿',
+  '🧑', '🧑🏽', '🧑🏾', '🧑🏿',
+  '👧', '👧🏽', '👧🏾', '👧🏿',
+  '👦', '👦🏽', '👦🏾', '👦🏿',
+  '👶', '👶🏽', '👶🏾', '👶🏿',
+  '🧓', '🧓🏾', '🧓🏿',
+  '🐱', '🐶', '⭐️',
 ];
 
 // Member roles. 'member' = adult family; 'child' and 'helper' (home help) can be
