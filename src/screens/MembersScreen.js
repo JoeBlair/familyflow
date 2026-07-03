@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView, Modal, Alert, Share, Linking } from 'react-native';
 import MemberEditor from '../components/MemberEditor';
+import ReminderSettings from '../components/ReminderSettings';
 import IntroScreen from './IntroScreen';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
 import { useApp } from '../context/AppContext';
@@ -131,6 +132,9 @@ export default function MembersScreen() {
       <Pressable style={styles.addBtn} onPress={openNew}>
         <Text style={styles.addText}>+ Add member</Text>
       </Pressable>
+
+      <Rule style={{ marginTop: 28 }} />
+      <ReminderSettings />
 
       <Pressable onPress={() => signOut()} style={styles.signout}>
         <Text style={styles.signoutText}>Sign out</Text>
