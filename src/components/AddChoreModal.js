@@ -5,6 +5,7 @@ import {
   Text,
   TextInput,
   Pressable,
+  ScrollView,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
@@ -64,6 +65,7 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.backdrop}>
         <Pressable style={styles.backdropTap} onPress={onClose} />
         <View style={styles.sheet}>
+          <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <Eyebrow>New chore</Eyebrow>
 
           <TextInput
@@ -72,7 +74,6 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
             placeholder="What needs doing?"
             placeholderTextColor={colors.muted}
             style={styles.input}
-            autoFocus
             returnKeyType="done"
             onSubmitEditing={submit}
           />
@@ -180,6 +181,7 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
           <Pressable onPress={submit} style={[styles.addBtn, !title.trim() && { opacity: 0.4 }]} disabled={!title.trim()}>
             <Text style={styles.addBtnText}>Add chore</Text>
           </Pressable>
+          </ScrollView>
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -189,7 +191,7 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
 const styles = StyleSheet.create({
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: '#0008' },
   backdropTap: { ...StyleSheet.absoluteFillObject },
-  sheet: { backgroundColor: colors.bg, padding: 22, paddingBottom: 38 },
+  sheet: { backgroundColor: colors.bg, padding: 22, paddingBottom: 38, maxHeight: '85%' },
   input: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line, paddingVertical: 14, fontSize: 18, color: colors.ink, marginTop: 14, marginBottom: 8 },
   notes: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, backgroundColor: colors.paper, padding: 12, minHeight: 56, fontSize: 15, color: colors.ink, textAlignVertical: 'top' },
   label: { fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase', color: colors.muted, marginTop: 18, marginBottom: 10 },
