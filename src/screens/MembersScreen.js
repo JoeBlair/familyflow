@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView, Modal, Alert, Share, Linking, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, Modal, Alert, Share, Linking } from 'react-native';
 import MemberEditor from '../components/MemberEditor';
 import ReminderSettings from '../components/ReminderSettings';
 import IntroScreen from './IntroScreen';
@@ -161,9 +161,9 @@ export default function MembersScreen() {
 
       {/* Editor */}
       <Modal visible={!!editing} transparent animationType="slide" onRequestClose={() => setEditing(null)}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.backdrop}>
+        <View style={styles.backdrop}>
           <View style={styles.sheet}>
-            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+            <ScrollView keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets showsVerticalScrollIndicator={false}>
               <Eyebrow>{editing === 'new' ? 'New member' : 'Edit member'}</Eyebrow>
               <View style={{ height: 14 }} />
               <MemberEditor name={name} setName={setName} color={color} setColor={setColor} emoji={emoji} setEmoji={setEmoji} role={role} setRole={setRole} showRole workDays={workDays} setWorkDays={setWorkDays} showWork namePlaceholder="Name" />
@@ -175,7 +175,7 @@ export default function MembersScreen() {
               </View>
             </ScrollView>
           </View>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
     </ScrollView>
   );

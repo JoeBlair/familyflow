@@ -7,8 +7,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { Eyebrow } from './ui';
 import { DOMAINS, FREQUENCIES, domainLabels, domainColors, frequencyLabels, colors, fonts } from '../theme/colors';
@@ -62,10 +60,10 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.backdrop}>
+      <View style={styles.backdrop}>
         <Pressable style={styles.backdropTap} onPress={onClose} />
         <View style={styles.sheet}>
-          <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          <ScrollView keyboardShouldPersistTaps="handled" automaticallyAdjustKeyboardInsets showsVerticalScrollIndicator={false}>
           <Eyebrow>New chore</Eyebrow>
 
           <TextInput
@@ -183,7 +181,7 @@ export default function AddChoreModal({ visible, defaultFrequency, frequencies =
           </Pressable>
           </ScrollView>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }
