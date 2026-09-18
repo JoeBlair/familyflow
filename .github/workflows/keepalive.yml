@@ -1,0 +1,27 @@
+name: Keep Supabase awake
+
+# Free-tier Supabase pauses after ~7 days of inactivity, which takes the app
+# offline. This hits the API daily so the timer never expires — and if the ping
+# fails (project paused / down), the job fails and GitHub emails you. No server.
+on:
+  schedule:
+    - cron: '0 9 * * *'   # every day at 09:00 UTC
+  workflow_dispatch: {}     # lets you run it manually from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping FamilyFlow Supabase
+        run: |
+          # anon/publishable key — public by design (RLS protects the data)
+          URL="https://mgvonazhifylfumplprf.supabase.co"
+          KEY="sb_publishable_qV16j65FcqaGQfBkmZv2nw_8i3lBJZX"
+          code=$(curl -s -o /dev/null -w "%{http_code}" -m 30 \
+            "$URL/rest/v1/families?select=id&limit=1" \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY" || echo 000)
+          echo "Supabase REST -> HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::Supabase unreachable (HTTP $code) — project paused or down"
+            exit 1
+          fi
