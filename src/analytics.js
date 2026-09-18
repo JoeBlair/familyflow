@@ -4,7 +4,7 @@ import PostHog from 'posthog-react-native';
 // (like the Supabase anon key). .env overrides let you swap it without a rebuild.
 // HOST must match your project's region: US -> us.i.posthog.com, EU -> eu.i.posthog.com.
 const KEY = process.env.EXPO_PUBLIC_POSTHOG_KEY || 'phc_BPA7tMihFvNaoyFM9FRco3KbbU3JPx5CSd4jujx5qsDq';
-const HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com';
+const HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com';
 
 export const posthog = KEY ? new PostHog(KEY, { host: HOST }) : null;
 
