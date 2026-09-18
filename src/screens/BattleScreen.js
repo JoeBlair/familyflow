@@ -8,6 +8,7 @@ import MineSweeper from '../components/MineSweeper';
 import MemberPickerModal from '../components/MemberPickerModal';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
 import { useApp } from '../context/AppContext';
+import { track } from '../analytics';
 import { weekKey } from '../utils/periods';
 import { colors, fonts } from '../theme/colors';
 
@@ -68,6 +69,7 @@ export default function BattleScreen() {
   }, [paramChoreId, stake, chores]);
 
   const onWin = ({ winnerId, loserId }) => {
+    track('forfeit_played', { game });
     if (stakeChore) claimChore(stakeChore.id, loserId);
     addBattle({
       weekKey: thisWeek,

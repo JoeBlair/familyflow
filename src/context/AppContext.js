@@ -9,6 +9,8 @@ import React, {
 } from 'react';
 import { Alert } from 'react-native';
 import * as api from '../data/api';
+import { isChoreDone } from '../utils/periods';
+import { track, identify, resetAnalytics } from '../analytics';
 
 const AppContext = createContext(null);
 
@@ -56,6 +58,12 @@ export function AppProvider({ children }) {
       sub?.subscription?.unsubscribe?.();
     };
   }, []);
+
+  // Analytics identity: tie events to the logged-in user; clear on sign-out.
+  useEffect(() => {
+    if (session?.user?.id) identify(session.user.id);
+    else resetAnalytics();
+  }, [session?.user?.id]);
 
   // ───────────────── load profile when session changes ─────────────────
   useEffect(() => {
@@ -180,10 +188,12 @@ export function AppProvider({ children }) {
       // onboarding
       createFamily: async (name, member) => {
         await api.createFamily(name, member);
+        track('family_created');
         await refreshProfile();
       },
       joinFamily: async (code, member) => {
         await api.joinFamily(code, member);
+        track('family_joined');
         await refreshProfile();
       },
 
@@ -191,6 +201,7 @@ export function AppProvider({ children }) {
       addChore: async (chore) => {
         try {
           await api.addChore(fid, chore);
+          track('chore_added', { frequency: chore.frequency });
           await refreshChores(fid);
         } catch (e) { reportError("Couldn't add chore", e); }
       },
@@ -226,7 +237,9 @@ export function AppProvider({ children }) {
       },
       toggleDone: async (chore) => {
         try {
+          const completing = !isChoreDone(chore); // track completions, not un-ticks
           await api.toggleChoreDone(chore, activeMember?.id ?? null);
+          if (completing) track('chore_completed', { frequency: chore.frequency });
           await refreshChores(fid);
         } catch (e) { reportError("Couldn't update chore", e); }
       },
@@ -234,6 +247,7 @@ export function AppProvider({ children }) {
       // members
       addMember: async (m) => {
         await api.addMember(fid, m);
+        track('member_added', { role: m.role || 'member' });
         await refreshMembers(fid);
       },
       updateMember: async (id, patch) => {
@@ -271,6 +285,7 @@ export function AppProvider({ children }) {
       rateTask: async (rating) => {
         try {
           await api.rateTask(fid, rating);
+          if (rating.status === 'done') track('appreciation_sent');
           await refreshRatings(fid);
         } catch (e) { reportError("Couldn't save your rating", e); }
       },
