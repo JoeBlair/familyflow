@@ -13,7 +13,7 @@ export default function OnboardingScreen() {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [color, setColor] = useState(MEMBER_COLORS[0]);
-  const [emoji, setEmoji] = useState('👩');
+  const [emoji, setEmoji] = useState(''); // optional — falls back to the initial
   const [busy, setBusy] = useState(false);
 
   const canSubmit = name.trim() && (mode === 'create' ? familyName.trim() : code.trim());

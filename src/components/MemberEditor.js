@@ -43,8 +43,11 @@ export default function MemberEditor({
         ))}
       </View>
 
-      <Text style={styles.label}>Emoji</Text>
+      <Text style={styles.label}>Emoji (optional)</Text>
       <View style={styles.row}>
+        <Pressable onPress={() => setEmoji('')} style={[styles.emojiBtn, !emoji && styles.emojiActive]}>
+          <Text style={styles.noneText}>None</Text>
+        </Pressable>
         {MEMBER_EMOJIS.map((e) => (
           <Pressable key={e} onPress={() => setEmoji(e)} style={[styles.emojiBtn, emoji === e && styles.emojiActive]}>
             <Text style={styles.emojiText}>{e}</Text>
@@ -78,6 +81,7 @@ const styles = StyleSheet.create({
   emojiBtn: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
   emojiActive: { borderColor: colors.gold, borderWidth: 1.5 },
   emojiText: { fontSize: 19 },
+  noneText: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', color: colors.muted },
   roleChip: { paddingVertical: 8, paddingHorizontal: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
   roleChipActive: { backgroundColor: colors.ink, borderColor: colors.ink },
   roleText: { fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', color: colors.charcoal },

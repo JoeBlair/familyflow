@@ -113,6 +113,18 @@ export const roleLabels = { member: 'Family', child: 'Child', helper: 'Home help
 export function memberColor(member) {
   return member ? member.color : colors.muted;
 }
+
+// First letter of a member's name — the neutral avatar when no emoji is chosen.
+export function memberInitial(member) {
+  const n = (member?.name || '').trim();
+  return n ? n[0].toUpperCase() : '?';
+}
+
+// "🐱 Name" when an emoji is set, else just "Name" (no stray leading space).
+export function memberTag(member) {
+  if (!member) return '';
+  return member.emoji ? `${member.emoji} ${member.name}` : member.name;
+}
 export function memberLabel(member) {
   return member ? member.name : 'Unassigned';
 }

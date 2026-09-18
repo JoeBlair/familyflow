@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Animated, Easing } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Eyebrow } from './ui';
-import { colors, fonts } from '../theme/colors';
+import { colors, fonts, memberTag } from '../theme/colors';
 
 // A luck-based forfeit game: tap to flip, the coin decides. memberA / memberB
 // are members; onWin({ winnerId, loserId }) fires when it lands.
@@ -42,7 +42,7 @@ export default function CoinFlip({ memberA, memberB, onWin, disabled }) {
         {phase === 'done' && winner ? (
           <>
             <Eyebrow color={colors.muted}>Heads it is</Eyebrow>
-            <Text style={[styles.result, { color: winner.color }]}>{winner.emoji} {winner.name} wins</Text>
+            <Text style={[styles.result, { color: winner.color }]}>{memberTag(winner)} wins</Text>
             <Text style={styles.sub}>{loser?.name} takes the chore</Text>
           </>
         ) : (

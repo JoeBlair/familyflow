@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { colors, fonts } from '../theme/colors';
+import { colors, fonts, memberTag } from '../theme/colors';
 import { Eyebrow } from './ui';
 
 const ROWS = 6;
@@ -102,7 +102,7 @@ export default function ConnectFour({ memberA, memberB, onWin, disabled }) {
           <>
             <Eyebrow color={colors.muted}>To play</Eyebrow>
             <Text style={[styles.turnName, { color: current.color }]}>
-              {current.emoji} {current.name}
+              {memberTag(current)}
             </Text>
           </>
         ) : status === 'draw' ? (
@@ -111,7 +111,7 @@ export default function ConnectFour({ memberA, memberB, onWin, disabled }) {
           <>
             <Eyebrow color={colors.muted}>Winner</Eyebrow>
             <Text style={[styles.turnName, { color: memberFor(winner).color }]}>
-              {memberFor(winner).emoji} {memberFor(winner).name}
+              {memberTag(memberFor(winner))}
             </Text>
           </>
         )}

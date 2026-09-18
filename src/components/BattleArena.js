@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import PixelSprite from './PixelSprite';
-import { colors } from '../theme/colors';
+import { colors, memberTag } from '../theme/colors';
 
 const FIGHT_MS = 5000;
 const TARGET_TAPS = 45;
@@ -95,7 +95,7 @@ export default function BattleArena({ memberA, memberB, onFinish, disabled }) {
         <PixelSprite skin={member.color} flip={flip} scale={2.2} />
       </Animated.View>
       <Text style={[styles.sideName, { color: member.color }]} numberOfLines={1}>
-        {member.emoji} {member.name}
+        {memberTag(member)}
       </Text>
       {phase === 'fighting' && <Text style={styles.tapHint}>TAP!</Text>}
     </Pressable>

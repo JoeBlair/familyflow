@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Eyebrow } from './ui';
-import { colors, fonts } from '../theme/colors';
+import { colors, fonts, memberTag } from '../theme/colors';
 
 const ROWS = 6;
 const COLS = 5;
@@ -94,14 +94,14 @@ export default function MineSweeper({ memberA, memberB, onWin, disabled }) {
           <>
             <Eyebrow color={colors.muted}>Boom</Eyebrow>
             <Text style={[styles.head, { color: memberFor(loser).color }]}>
-              {memberFor(loser).emoji} {memberFor(loser).name} hit a mine
+              {memberTag(memberFor(loser))} hit a mine
             </Text>
             <Text style={styles.sub}>Takes the chore.</Text>
           </>
         ) : (
           <>
             <Eyebrow color={colors.muted}>To reveal</Eyebrow>
-            <Text style={[styles.head, { color: current.color }]}>{current.emoji} {current.name}</Text>
+            <Text style={[styles.head, { color: current.color }]}>{memberTag(current)}</Text>
             <Text style={styles.sub}>Pick a safe square. Hit a mine, you're stuck with it.</Text>
           </>
         )}

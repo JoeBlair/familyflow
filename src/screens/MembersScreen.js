@@ -5,7 +5,7 @@ import ReminderSettings from '../components/ReminderSettings';
 import IntroScreen from './IntroScreen';
 import { Masthead, Eyebrow, Rule } from '../components/ui';
 import { useApp } from '../context/AppContext';
-import { MEMBER_COLORS, roleLabels, colors, fonts } from '../theme/colors';
+import { MEMBER_COLORS, roleLabels, memberInitial, colors, fonts } from '../theme/colors';
 
 export default function MembersScreen() {
   const { family, members, activeMember, addMember, updateMember, deleteMember, signOut, deleteAccount } = useApp();
@@ -14,14 +14,14 @@ export default function MembersScreen() {
   const [howto, setHowto] = useState(false);
   const [name, setName] = useState('');
   const [color, setColor] = useState(MEMBER_COLORS[0]);
-  const [emoji, setEmoji] = useState('🙂');
+  const [emoji, setEmoji] = useState(''); // optional — falls back to the initial
   const [role, setRole] = useState('member');
   const [workDays, setWorkDays] = useState(5);
 
   const openNew = () => {
     setName('');
     setColor(MEMBER_COLORS[members.length % MEMBER_COLORS.length]);
-    setEmoji('🙂');
+    setEmoji('');
     setRole('member');
     setWorkDays(5);
     setEditing('new');
@@ -116,7 +116,7 @@ export default function MembersScreen() {
             {i > 0 && <Rule />}
             <View style={styles.memberRow}>
               <View style={[styles.avatar, { backgroundColor: m.color }]}>
-                <Text style={styles.avatarEmoji}>{m.emoji}</Text>
+                <Text style={m.emoji ? styles.avatarEmoji : styles.avatarInitial}>{m.emoji || memberInitial(m)}</Text>
               </View>
               <Text style={styles.memberName}>{m.name}</Text>
               {m.role && m.role !== 'member' && (
@@ -194,6 +194,7 @@ const styles = StyleSheet.create({
   memberRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14 },
   avatar: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
   avatarEmoji: { fontSize: 17 },
+  avatarInitial: { fontSize: 16, fontWeight: '700', color: colors.paper },
   memberName: { flex: 1, fontFamily: fonts.serif, fontSize: 19, color: colors.ink },
   roleTag: { fontSize: 9, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', color: colors.gold, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.gold, paddingHorizontal: 6, paddingVertical: 2, marginLeft: 8 },
   link: { marginLeft: 16 },
